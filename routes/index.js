@@ -3,7 +3,7 @@
 module.exports = function(app) {
     // app.get('/', page.index);
     app.get( "/", function (req, res) { 
-        return res.render( "index" );
+        return res.use( "index" );
     });
 };
 
