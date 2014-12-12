@@ -44,15 +44,20 @@ define([
             },
 
             saveStatus: function () { 
+                console.log("Running saveStatus");
                 var newText = $(".user-status > input").val();
-                if (newText != this.model.get("status")) { 
-                    var newStatus = new UserStatus({ "statusText": newText });
+                if (true) { 
+                    console.log("running set/save", newText);
 
-                    newStatus.save({
-                        success: function (model, response, options) { 
+                    var newStatus = new UserStatus({ statusText: newText });
+
+                    newStatus.save( { statusText: newText }, { 
+                        success: function () { 
+                            console.log("success");
                         },
-                        error: function (model, response, options) { 
-                        },
+                        error: function () { 
+                            console.log("error");
+                        }
                     });
                 }
 
