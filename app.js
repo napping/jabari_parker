@@ -84,7 +84,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
     res.end();
   });
 
-  app.get('/api/profile/:eid', function (req, res) {
+  app.get('/api/profile/:eid?', function (req, res) {
     var eid;
     if (req.params.eid) {
       eid = req.params.eid;
@@ -103,9 +103,9 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       };
       dynamodb.getItem(params, function (err, data) {
         if (err) {
-          req.write(JSON.stringify({ success: false }));
+          res.write(JSON.stringify({ success: false }));
         } else {
-          req.write(JSON.stringify({
+          res.write(JSON.stringify({
             success: true,
             firstName: data.Item.firstName.S,
             lastName: data.Item.lastName.S,
@@ -114,12 +114,13 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
             birthday: data.Item.birthday.N
           }));
         }
+        res.end();
       });
     } else {
       res.write(JSON.stringify({
         success: false
       }));
+      res.end();
     }
-    res.end();
   });
 });
