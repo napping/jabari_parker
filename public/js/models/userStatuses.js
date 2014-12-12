@@ -11,7 +11,7 @@ define([
 				timestamp: "None",
 			},
 
-			idAttribute: "eid",
+			idAttribute: "statusEid",
 
 			initialize: function () { 
 				this.on("invalid", function (model, error) { 
@@ -20,13 +20,13 @@ define([
 			},
 
 			validate: function () { // not sure if necessary
-				if ( !this.get("eid") ) { 
-				    return "The status model requires an eid to be passed in.";
+				if ( !this.get("statusEid") ) { 
+				    return "The status model requires an statusEid to be passed in.";
 				}
 			},
 
             url: function () { 
-                return "/api/status/" + this.eid;
+                return "/api/status/" + this.statusEid;
             }
 				
 		});

@@ -59,7 +59,7 @@ define([
                     success: function (model, response, options) { 
                         console.log("Success fetching user", eid, ".", response);
 
-                        var userStatus = new UserStatus({ eid: model.get("statusId") });
+                        var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
                         userStatus.fetch({
                             success: function (userStatus, response, options) {
                                 model.set({ status: userStatus.get("statusText") }); 
