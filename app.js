@@ -26,6 +26,7 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
 
   app.use(express.static('public'));
 
+  AWS.config.region = 'us-east-1';
   var dynamodb = new AWS.DynamoDB();
 
   app.post('/api/login', function (req, res) {
@@ -35,32 +36,35 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
       return;
     }
     var params = {
-      Key: {
+      KeyConditions: {
         email: {
-          S: req.body.email
+          ComparisonOperator: 'EQ',
+          AttributeValueList: [{ S: req.body.email }]
         }
       },
       TableName: 'users',
-      ProjectionExpression: 'uuid, password'
+      IndexName: 'email-index',
+      Limit: 1,
+      ProjectionExpression: 'eid, password'
     };
-    dynamodb.getItem(params, function (err, data) {
+    dynamodb.query(params, function (err, data) {
       if (err) {
         res.write(JSON.stringify({ success: false }));
       } else {
-        var password = data.Item.password.S;
+        var password = data.Items[0].password.S;
         var sha256sum = crypto.createHash('sha256');
         sha256sum.update(req.body.password);
-        if (sha256sum.digest() === password) {
+        if (sha256sum.digest('hex') === password) {
           // user authentication successful
-          req.session.uuid = data.Item.uuid.S;
+          req.session.eid = data.Items[0].eid.S;
           res.write(JSON.stringify({ success: true }));
         } else {
           // user authentication failed
           res.write(JSON.stringify({ success: false }));
         }
       }
+      res.end();
     });
-    res.end();
   });
 
   app.post('/api/logout', function (req, res) {
@@ -68,12 +72,12 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
     res.end();
   });
 
-  app.get('/api/profile/:uuid', function (req, res) {
-    if (req.session.uuid && req.params.uuid) {
+  app.get('/api/profile/:eid', function (req, res) {
+    if (req.session.eid && req.params.eid) {
       var params = {
         Key: {
-          uuid: {
-            S: req.params.uuid
+          eid: {
+            S: req.params.eid
           }
         },
         TableName: 'users',
