@@ -26,7 +26,7 @@ define([
 			},
 
             url: function () { 
-                return "/api/status/" + this.statusEid;
+                return "/api/status/" + this.get("statusEid");
             }
 				
 		});
