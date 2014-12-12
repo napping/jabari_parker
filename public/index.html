@@ -1,16 +1,28 @@
 <div class="enter-credentials">
-    <form role="form" action="/api/login" method="post">
-        <div>
-            <label for="id-username">Username: </label>
-            <input id="id-username" name="email" type="text" maxlength="64">
-        </div>
-        <div>
-            <label for="id-password">Password: </label>
-            <input id="id-password" name="password" type="password" maxlength="256">
-        </div>
+    <div>
+        <label for="id-email">Username: </label>
+        <input id="id-email" name="email" type="text" maxlength="64">
+    </div>
+    <div>
+        <label for="id-password">Password: </label>
+        <input id="id-password" name="password" type="password" maxlength="256">
+    </div>
 
-        <div class="submit-credentials">
-            <a id="submit-credentials"><button type="submit" name="submit" value="Submit">Submit</button></a>
-        </div>
-    </form>
+    <div class="submit-credentials">
+        <a><button id="submit-credentials">Submit</button></a>
+    </div>
 </div>
+<script src="./js/libs/jquery-2.1.1.js"></script>
+<script>
+    $("#submit-credentials").on( "click", function () {
+        var email = $("#id-email").val();
+        var password = $("#id-password").val();
+
+        var credentials = {};
+        credentials.email = email;
+        credentials.password = password;
+        $.post( "/api/login", credentials, function (response) { 
+            console.log(response);
+        });
+    });
+</script>
