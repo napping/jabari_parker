@@ -20,14 +20,9 @@ define([
 			},
 
 			validate: function () { // not sure if necessary
-				if ( !this.get("statusEid") ) { 
-				    return "The status model requires an statusEid to be passed in.";
-				}
 			},
 
-            url: function () { 
-                return "/api/entity/" + this.get("statusEid");
-            }
+            urlRoot: "/api/entity/"
 				
 		});
 		
