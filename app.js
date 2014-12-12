@@ -139,7 +139,6 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       },
       TableName: 'entities'
     };
-    console.log(params);
     dynamodb.getItem(params, function (err, data) {
       if (err || !data.Item) {
         res.write(JSON.stringify({ success: false }));
