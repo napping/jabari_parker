@@ -167,8 +167,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
         ownerEid: { S: req.session.eid },
         timestamp: { N: Math.floor(new Date() / 1000).toString() }
       },
-      TableName: 'entities',
-      ReturnValues: 'ALL_NEW'
+      TableName: 'entities'
     };
     for (var attr in req.body) {
       params.Item[attr] = { S: req.body[attr] };
@@ -176,20 +175,38 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
     dynamodb.putItem(params, function (err, data) {
       if (err) {
         res.write(JSON.stringify({ success: false }));
-        console.log(err);
+        res.end();
       } else {
-        var result = {
-          success: true,
-          eid: params.Item.eid.S,
-          ownerEid: params.Item.ownerEid.S,
-          timestamp: params.Item.timestamp.N
+        // update the current status attribute in the user table
+        var params2 = {
+          Key: {
+            eid: { S: req.session.eid }
+          },
+          TableName: 'users',
+          UpdateExpression: 'SET statusEid = :newEid',
+          ExpressionAttributeValues: {
+            ':newEid': { S: params.Item.eid.S }
+          }
         };
-        for (var attr in req.body) {
-          result[attr] = req.body[attr];
-        }
-        res.write(JSON.stringify(result));
+        dynamodb.updateItem(params2, function (err, data) {
+          if (err) {
+            res.write(JSON.stringify({ success: false }));
+          } else {
+            // write the new status back to the client
+            var result = {
+              success: true,
+              eid: params.Item.eid.S,
+              ownerEid: params.Item.ownerEid.S,
+              timestamp: params.Item.timestamp.N
+            };
+            for (var attr in req.body) {
+              result[attr] = req.body[attr];
+            }
+            res.write(JSON.stringify(result));
+          }
+          res.end();
+        });
       }
-      res.end();
     });
   });
 });
