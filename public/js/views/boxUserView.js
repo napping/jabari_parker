@@ -51,8 +51,10 @@ define([
 
                     var newStatus = new UserStatus({ statusText: newText });
 
+                    var view = this;
                     newStatus.save( { statusText: newText }, { 
                         success: function () { 
+                            view.render();
                             console.log("success");
                         },
                         error: function () { 
