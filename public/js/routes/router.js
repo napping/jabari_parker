@@ -89,7 +89,8 @@ define([
                 // TODO
             },
 
-            handleError: function () { 
+            handleError: function (message) { 
+                console.log(message);
                 // TODO
             },
 

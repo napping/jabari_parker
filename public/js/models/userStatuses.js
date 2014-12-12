@@ -8,7 +8,6 @@ define([
 		var UserStatus = Backbone.Model.extend({ 
 			defaults: { 
 				statusText: "",
-				timestamp: "None",
 			},
 
 			idAttribute: "statusEid",
