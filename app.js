@@ -45,7 +45,7 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
         var password = data.Item.password.S;
         var sha256sum = crypto.createHash('sha256');
         sha256sum.update(req.body.password);
-        if (sha256sum.digest() === req.body.password) {
+        if (sha256sum.digest() === password) {
           // user authentication successful
           req.session.uuid = data.Item.uuid.S;
           req.write(JSON.stringify({ success: true }));
