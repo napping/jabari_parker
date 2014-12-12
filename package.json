@@ -20,7 +20,7 @@
         "jquery": "~1.11.1",
         "underscore": "~1.5.2",
         "backbone": "~1.1.0",
-        "require": "2.1.15"
+        "requirejs": "2.1.15"
     }
 }
 

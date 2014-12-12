@@ -1,11 +1,19 @@
-var express = require( "express" );
-var app = express();
+/* jslint node: true */
+'use strict';
 
-require( "./init" )( app );
+var requirejs = require('requirejs');
 
-app.listen(app.get('port'), function() {
-    console.log('Express server listening on port ' + app.get('port'));
+requirejs.config({
+  nodeRequire: require
 });
 
-app.use(express.static("public"));
+requirejs(['express'], function (express) {
+  var app = express();
 
+  var port = process.env.PORT || 9000;
+  app.listen(port, function () {
+    console.log('Express server listening on port ' + port);
+  });
+
+  app.use(express.static('public'));
+});
