@@ -44,26 +44,22 @@ define([
             },
 
             saveStatus: function () { 
-                console.log("Running saveStatus");
                 var newText = $(".user-status > input").val();
                 if (true) { 
-                    console.log("running set/save", newText);
-
                     var newStatus = new UserStatus({ statusText: newText });
 
                     var view = this;
                     newStatus.save( { statusText: newText }, { 
                         success: function () { 
                             view.render();
-                            console.log("success");
                         },
                         error: function () { 
-                            console.log("error");
+                            view.render();
+                            vent.trigger( "error", "Error updating status." );
                         }
                     });
                 }
 
-                this.render();
                 this.statusEdit = false;
             }
 		});
