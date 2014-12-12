@@ -7,8 +7,8 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypto'],
-    function (express, session, ejs, bodyParser, AWS, crypto) {
+requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypto', 'node-uuid'],
+    function (express, session, ejs, bodyParser, AWS, crypto, uuid) {
   var app = express();
 
   var port = process.env.PORT || 9000;
@@ -60,7 +60,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       ProjectionExpression: 'eid, password'
     };
     dynamodb.query(params, function (err, data) {
-      if (err) {
+      if (err || !data.Items) {
         res.write(JSON.stringify({ success: false }));
       } else {
         var password = data.Items[0].password.S;
@@ -99,14 +99,15 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
           }
         },
         TableName: 'users',
-        ProjectionExpression: 'firstName, lastName, interests, affiliation, birthday'
+        ProjectionExpression: 'statusEid, firstName, lastName, interests, affiliation, birthday'
       };
       dynamodb.getItem(params, function (err, data) {
-        if (err) {
+        if (err || !data.Item) {
           res.write(JSON.stringify({ success: false }));
         } else {
           res.write(JSON.stringify({
             success: true,
+            statusEid: data.Item.statusEid.S,
             firstName: data.Item.firstName.S,
             lastName: data.Item.lastName.S,
             interests: data.Item.interests.SS,
@@ -122,5 +123,67 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       }));
       res.end();
     }
+  });
+
+  app.get('/api/entity/:eid', function (req, res) {
+    if (!req.session.eid || !req.params.eid) {
+      res.write(JSON.stringify({ success: false }));
+      res.end();
+      return;
+    }
+    var params = {
+      Key: {
+        eid: {
+          S: req.params.eid
+        }
+      },
+      TableName: 'entities'
+    };
+    console.log(params);
+    dynamodb.getItem(params, function (err, data) {
+      if (err || !data.Item) {
+        res.write(JSON.stringify({ success: false }));
+      } else {
+        var result = { success: true };
+        for (var attr in data.Item) {
+          for (var type in data.Item[attr]) {
+            result[attr] = data.Item[attr][type];
+          }
+        }
+        res.write(JSON.stringify(result));
+      }
+      res.end();
+    });
+  });
+
+  app.post('/api/status', function (req, res) {
+    if (!req.session.eid || !req.body.statusText) {
+      res.write(JSON.stringify({ success: false }));
+      res.end();
+      return;
+    }
+    var params = {
+      Item: {
+        eid: { S: uuid.v4() },
+        ownerEid: { S: req.session.eid },
+        timestamp: { N: Math.floor(new Date() / 1000) },
+        statusText: { S: req.body.statusText }
+      },
+      TableName: 'entities'
+    };
+    dynamodb.putItem(params, function (err, data) {
+      if (err) {
+        res.write(JSON.stringify({ success: false }));
+      } else {
+        res.write(JSON.stringify({
+          success: true,
+          eid: params.Item.eid.S,
+          ownerEid: params.Item.ownerEid.S,
+          timestamp: params.Item.timestamp.N,
+          statusText: params.Item.statusText.S
+        }));
+      }
+      res.end();
+    });
   });
 });
