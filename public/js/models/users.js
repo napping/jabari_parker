@@ -3,16 +3,18 @@ define([
 		"underscore",
 		"backbone",
 		"events",
+        "models/userStatuses"
 
 	], function ($, _, Backbone, vent) { 
 		var User = Backbone.Model.extend({ 
 			defaults: { 
 				firstName: "John",
 				lastName: "Smith",
-                interests:  [ "None"
-                            ],
+                interests:  [ "None" ],
                 affiliation: "None",
-                birthday: "Unknown"
+                birthday: "Unknown",
+                status: "Enter Status",
+                statusId: undefined,
 			},
 
 			idAttribute: "eid",
@@ -21,6 +23,7 @@ define([
 				this.on("invalid", function (model, error) { 
 					vent.trigger( "error", error );
 				});
+
 			},
 
 			validate: function () { // not sure if necessary

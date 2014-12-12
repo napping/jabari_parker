@@ -7,10 +7,11 @@ define([
         "views/skeletonView",
         "views/boxUserView",
         "models/users",
+        "models/userStatuses",
 
 	], function (	$, _, Backbone, vent, alertify,
                     SkeletonView, BoxUserView,
-                    User
+                    User, UserStatus
 				) { 
 
 		var Router = Backbone.Router.extend({
@@ -48,19 +49,33 @@ define([
                     affiliation: "Philly",
                     birthday: "April 6th, 1783",
                 });
-                var router = this;
-
                 // router.boxUserView = new BoxUserView({ model: testUser });
                 // $(".box-user").html( router.boxUserView.render().el );
 
                 var user = new User();
+                var router = this;
                 
                 user.fetch({
                     success: function (model, response, options) { 
                         console.log("Success fetching user", eid, ".", response);
 
-                        router.boxUserView = new BoxUserView({ model: model });
-                        $(".box-user").html( router.boxUserView.render().el );
+                        var userStatus = new UserStatus({ eid: model.get("statusId") });
+                        userStatus.fetch({
+                            success: function (userStatus, response, options) {
+                                model.set({ status: userStatus.get("statusText") }); 
+
+                                router.boxUserView = new BoxUserView({ model: model });
+                                $(".box-user").html( router.boxUserView.render().el );
+
+                            },
+                            error: function (userStatus, response, options) { 
+                                console.log("Error getting user", model.get("firstName") + "'s status");
+
+                                router.boxUserView = new BoxUserView({ model: model });
+                                $(".box-user").html( router.boxUserView.render().el );
+
+                            }
+                        });
                     },
                     error: function (model, response, options) { 
                         console.log("Failed fetching user", eid, ".", response);

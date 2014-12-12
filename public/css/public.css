@@ -248,6 +248,10 @@ ul {
     padding: .4em .6em;
 }
 
+.user-status input { 
+    width: 99%;
+}
+
 .user-status:hover { 
     background: #909090;
 }
