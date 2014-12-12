@@ -35,13 +35,11 @@ define([
 			},
 
 			loadIndex: function () { 
-                this.loadUser(123);
+                this.loadUser(123);     // TODO TESTING
 			},
 
             loadUser: function (eid) { 
-                var user = new User({ eid: eid });
-                
-                var testUser = new User({ 
+                var testUser = new User({   // TODO TESTING
                     eid: eid,
                     email: "brishi@seas.upenn.edu",
                     firstName: "Brian",
@@ -52,9 +50,11 @@ define([
                 });
                 var router = this;
 
-                router.boxUserView = new BoxUserView({ model: testUser });
-                $(".box-user").html( router.boxUserView.render().el );
-/*
+                // router.boxUserView = new BoxUserView({ model: testUser });
+                // $(".box-user").html( router.boxUserView.render().el );
+
+                var user = new User();
+                
                 user.fetch({
                     success: function (model, response, options) { 
                         console.log("Success fetching user", eid, ".", response);
@@ -66,7 +66,6 @@ define([
                         console.log("Failed fetching user", eid, ".", response);
                     },
                 });
-*/
             },
 
             renderMessage: function () { 
