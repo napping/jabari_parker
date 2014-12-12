@@ -21,8 +21,9 @@
         var credentials = {};
         credentials.email = email;
         credentials.password = password;
-        $.post( "/api/login", credentials, function (response) { 
+
+        $.ajax( "/api/login", JSON.stringify(credentials), function (response) { 
             console.log(response);
-        });
+        }, "json");
     });
 </script>
