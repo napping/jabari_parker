@@ -86,12 +86,11 @@ define([
             },
 
             renderMessage: function () { 
-                // TODO
+                alertify.log( message );
             },
 
             handleError: function (message) { 
-                console.log(message);
-                // TODO
+                alertify.alert( message );
             },
 
 			goBack: function () { 
