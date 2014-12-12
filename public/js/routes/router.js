@@ -58,6 +58,8 @@ define([
                 user.fetch({
                     success: function (model, response, options) { 
                         console.log("Success fetching user", eid, ".", response);
+                        console.log(model);
+                        console.log(model.get("statusEid"));
 
                         var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
                         userStatus.fetch({
