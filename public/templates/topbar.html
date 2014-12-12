@@ -1,0 +1,27 @@
+
+            <div class="navbar-default">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/"><img src="/images/just_eight_logo.png"/></a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-float-left eight">
+                        <li class="navbar-float-left"><strong>PennBook</strong></li>
+                        <form role="form" action="/search" method="post" 
+                            style="float:right; margin-left:50px; color:black;">
+                            <input id="id-query" name="query" type="Search Query" maxlength="256" 
+                                placeholder="test" size="72">
+                            <input id="id-search" name="submit" type="submit" value="Search">
+                        </form>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-float-right">
+                    <li><a href="/about">About PennBook</a></li>
+                    <% if (loggedIn) { %>
+                        <li><a href="/logout">Logout</a></li>
+                    <% } else { %>
+                        <li><a href="/">Login</a></li>
+                        <li class="active"><a href="/register">Create Account</a></li>
+                    <% } %>
+                    
+                </div><!--/.nav-collapse -->
+            </div>
+
