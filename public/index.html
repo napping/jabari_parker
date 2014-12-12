@@ -1,21 +1,16 @@
-<html lang="en">
-    <head>
-		<title>PennBook</title>
-		<link rel="shortcut icon" href="images/favicon.ico">
-        <link href="css/bootstrap.css" media="all" rel="stylesheet" type="text/css"/>
-        <link href="css/public.css" media="all" rel="stylesheet" type="text/css"/>
+<div class="enter-credentials">
+    <form role="form" action="/api/login" method="post">
+        <div>
+            <label for="id-username">Username: </label>
+            <input id="id-username" name="email" type="text" maxlength="64">
+        </div>
+        <div>
+            <label for="id-password">Password: </label>
+            <input id="id-password" name="password" type="password" maxlength="256">
+        </div>
 
-    </head>
-    <body>
-
-    <div class="backbone-holder">
-    </div>
-
-    <script data-main="/_js/main" src="/_js/libs/require.js"></script>
-
-    </body>
-</html>
-
-
-
-
+        <div class="submit-credentials">
+            <a id="submit-credentials"><button type="submit" name="submit" value="Submit">Submit</button></a>
+        </div>
+    </form>
+</div>

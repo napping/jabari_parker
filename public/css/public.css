@@ -191,7 +191,7 @@ a {
     border-bottom: 1px solid #f6f8fc;
 }
 
-.col-md-4 { 
+.box-row .col-md-4 { 
     padding-left: 2em;
     padding-right: 2em;
     padding-top: 1em;
@@ -204,7 +204,7 @@ a {
     padding-bottom: 2000px;
 }
 
-.col-md-4:hover { 
+.box-row .col-md-4:hover { 
     background: LightGray;
 }
 

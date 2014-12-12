@@ -1,7 +1,7 @@
 requirejs.config({ 
     urlArgs: "bust=" + (new Date()).getTime(),  // TODO DEVELOPMENT ONLY, prevents caching
 
-	baseURL: "/public/js",
+	baseURL: "/js",
 
 	shim:  {
 		underscore: {
@@ -19,7 +19,7 @@ requirejs.config({
 	},
 
 	paths: { 
-		jquery: "libs/jquery",
+		jquery: "libs/jquery-2.1.1",
 		underscore: "libs/underscore",
 		backbone: "libs/backbone",
 		text: "libs/text",

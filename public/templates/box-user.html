@@ -1,0 +1,17 @@
+<div class="box box-portrait">
+    <a href="/users/<%=user.USERNAME%>">
+    <% if (false) { %>
+        <img src="<%= profile.URL %>"/>
+    <% } else { %>
+        <img src="/images/filler.jpg"/>
+    <% } %>
+    </a>
+
+    <h3>
+        <%= firstName %> <%= lastName %>
+    </h3>
+    <h3>
+        <%= affiliation %>
+    </h3>
+</div>
+ 
