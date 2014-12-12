@@ -24,12 +24,14 @@ define([
 			},
 
 			validate: function () { // not sure if necessary
-				if ( !this.get("lastName") || !this.get("eid") ) { 
+				if ( !this.get("lastName") ) { 
 					return "This answer choice is missing required attributes.  Please try again.";
 				}
 			},
 
-			urlRoot: "/api/profile",
+            url: function () { 
+                return "/api/profile";
+            }
 				
 		});
 		
