@@ -32,6 +32,15 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
   AWS.config.region = 'us-east-1';
   var dynamodb = new AWS.DynamoDB();
 
+  app.get('/', function (req, res) {
+    if (req.session.eid) {
+      res.render('index');
+    } else {
+      res.render('login');
+    }
+    res.end();
+  });
+
   app.post('/api/login', function (req, res) {
     if (!req.body.email || !req.body.password) {
       res.write(JSON.stringify({ success: false }));
