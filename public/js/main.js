@@ -1,7 +1,7 @@
 requirejs.config({ 
     urlArgs: "bust=" + (new Date()).getTime(),  // TODO DEVELOPMENT ONLY, prevents caching
 
-	baseURL: "/js",
+	baseURL: "static/js",
 
 	shim:  {
 		underscore: {
