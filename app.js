@@ -7,8 +7,8 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
-    function (express, session, bodyParser, AWS, crypto) {
+requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypto'],
+    function (express, session, ejs, bodyParser, AWS, crypto) {
   var app = express();
 
   var port = process.env.PORT || 9000;
@@ -22,9 +22,12 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
     saveUninitialized: false
   }));
 
+  app.engine('html', ejs.renderFile);
+  app.set('view engine', 'ejs');
+
   app.use(bodyParser.json());
 
-  app.use(express.static('public'));
+  app.use('/static', express.static('public'));
 
   AWS.config.region = 'us-east-1';
   var dynamodb = new AWS.DynamoDB();
