@@ -3,7 +3,7 @@ define([
 		"underscore",
 		"backbone",
 		"events",
-		"alertify",
+		"alertify"
 
 	], function (	$, _, Backbone, vent, alertify
 				) { 
