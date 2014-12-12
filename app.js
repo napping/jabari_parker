@@ -170,7 +170,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       TableName: 'entities'
     };
     for (var attr in req.body) {
-      params.Item[attr].S = req.body[attr];
+      params.Item[attr] = { S: req.body[attr] };
     }
     dynamodb.putItem(params, function (err, data) {
       if (err) {
