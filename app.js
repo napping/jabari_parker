@@ -31,6 +31,7 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
   app.post('/api/login', function (req, res) {
     if (!req.body.email || !req.body.password) {
       res.write(JSON.stringify({ success: false }));
+      res.end();
       return;
     }
     var params = {
@@ -59,10 +60,12 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
         }
       }
     });
+    res.end();
   });
 
   app.post('/api/logout', function (req, res) {
     req.session.destroy();
+    res.end();
   });
 
   app.get('/api/profile/:uuid', function (req, res) {
@@ -95,5 +98,6 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
         success: false
       }));
     }
+    res.end();
   });
 });
