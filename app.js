@@ -56,4 +56,40 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
       }
     });
   });
+
+  app.post('/api/logout', function (req, res) {
+    req.session.destroy();
+  });
+
+  app.get('/api/profile/:uuid', function (req, res) {
+    if (req.session.uuid && req.params.uuid) {
+      var params = {
+        Key: {
+          uuid: {
+            S: req.params.uuid
+          }
+        },
+        TableName: 'users',
+        ProjectionExpression: 'firstName, lastName, interests, affiliation, birthday'
+      };
+      dynamodb.getItem(params, function (err, data) {
+        if (err) {
+          req.write(JSON.stringify({ success: false }));
+        } else {
+          req.write(JSON.stringify({
+            success: true,
+            firstName: data.Item.firstName.S,
+            lastName: data.Item.lastName.S,
+            interests: data.Item.interests.SS,
+            affiliation: data.Item.affiliation.S,
+            birthday: data.Item.birthday.N
+          }));
+        }
+      });
+    } else {
+      req.write(JSON.stringify({
+        success: false
+      }));
+    }
+  });
 });
