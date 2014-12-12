@@ -7,14 +7,20 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['express', 'bodyParser', 'aws-sdk', 'crypto'],
-    function (express, bodyParser, AWS, crypto) {
+requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
+    function (express, session, bodyParser, AWS, crypto) {
   var app = express();
 
   var port = process.env.PORT || 9000;
   app.listen(port, function () {
     console.log('Express server listening on port ' + port);
   });
+
+  app.use(session({
+    secret: 'new-age',
+    resave: false,
+    saveUninitialized: false
+  }));
 
   app.use(bodyParser.json());
 
@@ -41,7 +47,8 @@ requirejs(['express', 'bodyParser', 'aws-sdk', 'crypto'],
         sha256sum.update(req.body.password);
         if (sha256sum.digest() === req.body.password) {
           // user authentication successful
-          req.write(JSON.stringify({ success: true, uuid: data.Item.uuid.S }));
+          req.session.uuid = data.Item.uuid.S;
+          req.write(JSON.stringify({ success: true }));
         } else {
           // user authentication failed
           req.write(JSON.stringify({ success: false }));
