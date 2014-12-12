@@ -22,7 +22,7 @@
         credentials.email = email;
         credentials.password = password;
 
-        $.ajax( "/api/login", JSON.stringify(credentials), function (response) { 
+        $.post( "/api/login", JSON.stringify(credentials), function (response) { 
             console.log(response);
         }, "json");
     });
