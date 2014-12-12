@@ -48,12 +48,11 @@ define([
                     affiliation: "Philly",
                     birthday: "April 6th, 1783",
                 });
-                var router = this;
-
                 // router.boxUserView = new BoxUserView({ model: testUser });
                 // $(".box-user").html( router.boxUserView.render().el );
 
                 var user = new User();
+                var router = this;
                 
                 user.fetch({
                     success: function (model, response, options) { 
