@@ -165,9 +165,10 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       Item: {
         eid: { S: uuid.v4() },
         ownerEid: { S: req.session.eid },
-        timestamp: { N: Math.floor(new Date() / 1000) }
+        timestamp: { N: Math.floor(new Date() / 1000).toString() }
       },
-      TableName: 'entities'
+      TableName: 'entities',
+      ReturnValues: 'ALL_NEW'
     };
     for (var attr in req.body) {
       params.Item[attr] = { S: req.body[attr] };
@@ -175,14 +176,18 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
     dynamodb.putItem(params, function (err, data) {
       if (err) {
         res.write(JSON.stringify({ success: false }));
+        console.log(err);
       } else {
-        res.write(JSON.stringify({
+        var result = {
           success: true,
           eid: params.Item.eid.S,
           ownerEid: params.Item.ownerEid.S,
-          timestamp: params.Item.timestamp.N,
-          statusText: params.Item.statusText.S
-        }));
+          timestamp: params.Item.timestamp.N
+        };
+        for (var attr in req.body) {
+          result[attr] = req.body[attr];
+        }
+        res.write(JSON.stringify(result));
       }
       res.end();
     });
