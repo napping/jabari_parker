@@ -29,6 +29,10 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
   var dynamodb = new AWS.DynamoDB();
 
   app.post('/api/login', function (req, res) {
+    if (!req.body.email || !req.body.password) {
+      res.write(JSON.stringify({ success: false }));
+      return;
+    }
     var params = {
       Key: {
         email: {
@@ -40,7 +44,7 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
     };
     dynamodb.getItem(params, function (err, data) {
       if (err) {
-        req.write(JSON.stringify({ success: false }));
+        res.write(JSON.stringify({ success: false }));
       } else {
         var password = data.Item.password.S;
         var sha256sum = crypto.createHash('sha256');
@@ -48,10 +52,10 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
         if (sha256sum.digest() === password) {
           // user authentication successful
           req.session.uuid = data.Item.uuid.S;
-          req.write(JSON.stringify({ success: true }));
+          res.write(JSON.stringify({ success: true }));
         } else {
           // user authentication failed
-          req.write(JSON.stringify({ success: false }));
+          res.write(JSON.stringify({ success: false }));
         }
       }
     });
@@ -87,7 +91,7 @@ requirejs(['express', 'express-session', 'body-parser', 'aws-sdk', 'crypto'],
         }
       });
     } else {
-      req.write(JSON.stringify({
+      res.write(JSON.stringify({
         success: false
       }));
     }
