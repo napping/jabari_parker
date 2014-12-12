@@ -16,7 +16,7 @@ define([
 		var Router = Backbone.Router.extend({
 			routes: { 
 				"": "loadIndex",
-                "user/:uuid": "loadUser",
+                "user/:eid": "loadUser",
                 "back": "goBack",
 			},
 
@@ -36,19 +36,19 @@ define([
                 $(".backbone-holder").html( this.skeletonView.render().el );
 			},
 
-            loadUser: function (uuid) { 
-                var user = new User({ uuid: uuid });
+            loadUser: function (eid) { 
+                var user = new User({ eid: eid });
                 
                 var router = this;
                 user.fetch({
                     success: function (model, response, options) { 
-                        console.log("Success fetching user", uuid, ".", response);
+                        console.log("Success fetching user", eid, ".", response);
 
                         router.boxUserView = new BoxUserView({ model: model });
                         $(".box-user").html( router.boxUserView.render().el );
                     },
                     error: function (model, response, options) { 
-                        console.log("Failed fetching user", uuid, ".", response);
+                        console.log("Failed fetching user", eid, ".", response);
                     },
                 });
             },

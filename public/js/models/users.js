@@ -15,7 +15,7 @@ define([
                 birthday: "Unknown"
 			},
 
-			idAttribute: "uuid",
+			idAttribute: "eid",
 
 			initialize: function () { 
 				this.on("invalid", function (model, error) { 
@@ -24,7 +24,7 @@ define([
 			},
 
 			validate: function () { // not sure if necessary
-				if ( !this.get("lastName") || !this.get("uuid") ) { 
+				if ( !this.get("lastName") || !this.get("eid") ) { 
 					return "This answer choice is missing required attributes.  Please try again.";
 				}
 			},
