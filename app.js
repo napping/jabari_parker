@@ -85,11 +85,17 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
   });
 
   app.get('/api/profile/:eid', function (req, res) {
-    if (req.session.eid && req.params.eid) {
+    var eid;
+    if (req.params.eid) {
+      eid = req.params.eid;
+    } else {
+      eid = req.session.eid;
+    }
+    if (req.session.eid) {
       var params = {
         Key: {
           eid: {
-            S: req.params.eid
+            S: eid
           }
         },
         TableName: 'users',
