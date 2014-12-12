@@ -35,6 +35,7 @@ define([
 			},
 
 			loadIndex: function () { 
+                this.loadUser(123);
 			},
 
             loadUser: function (eid) { 
