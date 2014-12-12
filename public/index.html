@@ -1,36 +1,21 @@
-<div class="enter-credentials">
-    <div>
-        <label for="id-email">Username: </label>
-        <input id="id-email" name="email" type="text" maxlength="64">
-    </div>
-    <div>
-        <label for="id-password">Password: </label>
-        <input id="id-password" name="password" type="password" maxlength="256">
+<html lang="en">
+    <head>
+		<title>PennBook</title>
+		<link rel="shortcut icon" href="images/favicon.ico">
+        <link href="css/bootstrap.css" media="all" rel="stylesheet" type="text/css"/>
+        <link href="css/public.css" media="all" rel="stylesheet" type="text/css"/>
+
+    </head>
+    <body>
+
+    <div class="backbone-holder">
     </div>
 
-    <div class="submit-credentials">
-        <a><button id="submit-credentials">Submit</button></a>
-    </div>
-</div>
-<script src="./js/libs/jquery-2.1.1.js"></script>
-<script>
-    $("#submit-credentials").on( "click", function () {
-        var email = $("#id-email").val();
-        var password = $("#id-password").val();
+    <script data-main="/js/main" src="/js/libs/require.js"></script>
 
-        var credentials = {};
-        credentials.email = email;
-        credentials.password = password;
+    </body>
+</html>
 
-        $.ajax({
-            'type': 'POST',
-            'url': '/api/login',
-            'contentType': 'application/json',
-            'data': JSON.stringify(credentials),
-            'dataType': 'json',
-            'success': function (response) { 
-                console.log(response);
-            }
-        });
-    });
-</script>
+
+
+

@@ -28,18 +28,32 @@ define([
 				this.listenTo( vent, "error", function(message) {	    // TODO
 					this.handleError( message ); 
 				});	
-			},
 
-			loadIndex: function () { 
                 this.skeletonView = new SkeletonView({ loggedIn: true });
 
                 $(".backbone-holder").html( this.skeletonView.render().el );
 			},
 
+			loadIndex: function () { 
+			},
+
             loadUser: function (eid) { 
                 var user = new User({ eid: eid });
                 
+                var testUser = new User({ 
+                    eid: eid,
+                    email: "brishi@seas.upenn.edu",
+                    firstName: "Brian",
+                    lastName: "Shi",
+                    interests: ["playing", "working", "sleeping"],
+                    affiliation: "Philly",
+                    birthday: "April 6th, 1783",
+                });
                 var router = this;
+
+                router.boxUserView = new BoxUserView({ model: testUser });
+                $(".box-user").html( router.boxUserView.render().el );
+/*
                 user.fetch({
                     success: function (model, response, options) { 
                         console.log("Success fetching user", eid, ".", response);
@@ -51,6 +65,7 @@ define([
                         console.log("Failed fetching user", eid, ".", response);
                     },
                 });
+*/
             },
 
             renderMessage: function () { 

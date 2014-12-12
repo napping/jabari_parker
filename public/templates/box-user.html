@@ -1,5 +1,4 @@
 <div class="box box-portrait">
-    <a href="/users/<%=user.USERNAME%>">
     <% if (false) { %>
         <img src="<%= profile.URL %>"/>
     <% } else { %>
@@ -10,8 +9,22 @@
     <h3>
         <%= firstName %> <%= lastName %>
     </h3>
-    <h3>
+    <h4>
         <%= affiliation %>
-    </h3>
+    </h4>
+    <div class="user-interests">
+        <h5><%= firstName %> enjoys 
+            <% for (var i = 0; i < interests.length - 1; i++) { %>
+                <%= interests[i] %>,
+            <% } %>
+            and 
+            <% if (interests.length > 0) { %>
+                <%= interests[interests.length - 1] %>.
+            <% } %>
+        </h5>
+    </div>
+    <div class="user-status">
+        <div>ENTER STATUS</div>
+    </div>
 </div>
  

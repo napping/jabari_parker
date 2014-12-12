@@ -97,13 +97,13 @@ a {
     font-size: 110%;
 }
 .navbar-default {
-	background-color: #3137b6;
+	background-color: #537CCF;
 	border-color: #2f39ad;
     padding-left: 3em;
     padding-right: 3em;
 }
 .navbar-default .navbar-brand {
-	color: #ecf0f1;
+	color: #537CCF;
 }
 .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
 	color: #ecdbff;
@@ -237,6 +237,10 @@ a {
 ul { 
     list-style-type: none;
     margin-left: -2em;
+}
+
+.user-status { 
+    height: 2em;
 }
 
 .box-friends { 
