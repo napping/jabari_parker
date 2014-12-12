@@ -155,7 +155,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
     });
   });
 
-  app.post('/api/status', function (req, res) {
+  app.post('/api/entity', function (req, res) {
     if (!req.session.eid || !req.body.statusText) {
       res.write(JSON.stringify({ success: false }));
       res.end();
@@ -165,11 +165,13 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       Item: {
         eid: { S: uuid.v4() },
         ownerEid: { S: req.session.eid },
-        timestamp: { N: Math.floor(new Date() / 1000) },
-        statusText: { S: req.body.statusText }
+        timestamp: { N: Math.floor(new Date() / 1000) }
       },
       TableName: 'entities'
     };
+    for (var attr in req.body) {
+      params.Item[attr].S = req.body[attr];
+    }
     dynamodb.putItem(params, function (err, data) {
       if (err) {
         res.write(JSON.stringify({ success: false }));
