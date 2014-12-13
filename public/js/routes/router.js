@@ -9,12 +9,13 @@ define([
         "collections/userLists",
         "views/skeletonView",
         "views/boxUserView",
+        "views/boxPeekView",
         "views/boxFriendsView",
 
 	], function (	$, _, Backbone, vent, alertify,
                     User, UserStatus,
                     UserList,
-                    SkeletonView, BoxUserView, BoxFriendsView
+                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView
 				) { 
 
 		var Router = Backbone.Router.extend({
@@ -45,8 +46,9 @@ define([
                 this.user = new User();
                 
                 this.renderProfile(this.user);
+                this.renderPeek(this.user);     // TODO, test
                 this.renderFriends(this.user);
-                this.renderPhotos(this.user);
+
             },
 
             renderProfile: function (user) { 
@@ -60,14 +62,12 @@ define([
 
                                 router.boxUserView = new BoxUserView({ model: model });
                                 $(".box-user").html( router.boxUserView.render().el );
-
                             },
                             error: function (userStatus, response, options) { 
                                 console.log("Error getting user", model.get("firstName") + "'s status");
 
                                 router.boxUserView = new BoxUserView({ model: model });
                                 $(".box-user").html( router.boxUserView.render().el );
-
                             }
                         });
                     },
@@ -76,6 +76,34 @@ define([
                         vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
                     },
                 });
+            },
+
+            renderPeek: function (user) {
+                var router = this;
+                user.fetch({
+                    success: function (model, response, options) { 
+                        var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
+                        userStatus.fetch({
+                            success: function (userStatus, response, options) {
+                                model.set({ status: userStatus.get("statusText") }); 
+
+                                router.boxPeekView = new BoxPeekView({ model: model });
+                                $(".box-peek").html( router.boxPeekView.render().el );
+                            },
+                            error: function (userStatus, response, options) { 
+                                console.log("Error getting user", model.get("firstName") + "'s status");
+
+                                router.boxPeekView = new BoxPeekView({ model: model });
+                                $(".box-peek").html( router.boxPeekView.render().el );
+                            }
+                        });
+                    },
+                    error: function (model, response, options) { 
+                        console.log();
+                        vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
+                    },
+                });
+ 
             },
 
             renderFriends: function (user) { 

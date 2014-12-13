@@ -37,25 +37,27 @@ define([
 
                     this.statusEdit = true;
                 } 
-                $(".user-status > input", this.el).focus().on( "blur", function () { 
-                    view.saveStatus();
-                });
-                $(".user-status > input", this.el).keypress( function (e) { 
-                    if (e.keyCode == 13) {
+
+                $(".user-status > input", this.el).focus().unbind().bind( "keyup", function (e) { 
+                    if (e.keyCode == 13) { 
                         view.saveStatus();
                     }
+                });
+                $(".user-status > input", this.el).focus().off( "blur" ).on( "blur", function () { 
+                    view.saveStatus();
                 });
             },
 
             saveStatus: function () { 
                 var newText = $(".user-status > input").val();
 
-                if (true) { 
+                if (newText != this.model.get("status")) { 
                     var newStatus = new UserStatus({ statusText: newText });
 
                     var view = this;
                     newStatus.save( { statusText: newText }, { 
                         success: function (model) { 
+                            vent.trigger( "message", "Successfully updated status." );
                             view.model.set({ status: model.get("statusText") });
                             view.render();
                         },
@@ -65,6 +67,7 @@ define([
                         }
                     });
                 }
+                this.render();
 
                 this.statusEdit = false;
             }

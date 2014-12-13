@@ -1,8 +1,9 @@
-<div class="box box-portrait">
+<div class="box box-portrait box-peek">
+    <h3 class="peeking">Peeking...</h3>
     <% if (false) { %>
-        <img src="static/images/<%= url %>"/>
+        <img class="peek-img" src="static/images/<%= url %>"/>
     <% } else { %>
-        <img src="static/images/filler.jpg"/>
+        <img class="peek-img" src="static/images/filler.jpg"/>
     <% } %>
     </a>
 
@@ -25,20 +26,14 @@
     </div>
     <div class="user-status">
         <div>
-        <% if (status) { %>
-            <%= status %>
-        <% } else { %>
-            ENTER STATUS
-        <% } %>
+            Write on <%= firstName %>'s wall?
         </div>
     </div>
     <div class="view-select">
         <select class="form-control">
-
-            <option>Feed &#10148;</option>
             <option>Wall &#10148;</option>
             <option>Photos &#10148;</option>
-            <option>Edit &#10148;</option>
+
         </select>
     </div>
 

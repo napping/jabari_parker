@@ -224,7 +224,7 @@ a {
     margin-top: 2em;
     margin-left: auto;
     margin-right: auto;
-    border: 2px solid black;
+    border: 4px solid #E0E0E0;
 }
 
 .box-portrait .actions { 
@@ -243,7 +243,8 @@ ul {
     width: 80%;
     margin-left: auto;
     margin-right: auto;
-    background: darkgray;
+    margin-top: 1.5em;
+    background: #B8B8B8;
     text-align: left;
     padding: .4em .6em;
 }
@@ -253,16 +254,47 @@ ul {
 }
 
 .user-status:hover { 
-    background: #909090;
+    background: #A0A0A0;
+    cursor: pointer;
+}
+
+.view-select { 
+    margin-top: 2em;
+    padding: 0em 14.1em;
+}
+
+.view-select select { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    text-align: center;
+    padding-left: 1em;
+}
+
+.view-select select:hover { 
+    background: #F8F8F8;
+    cursor: pointer;
+}
+
+.view-select select option { 
 }
 
 .box-friends div { 
     margin-bottom: 15em;
+    min-height: 30em;
+}
+
+
+.box-friends .friends-list:hover { 
+    background: #B8B8B8;
+}
+
+.box-friends .network-list:hover { 
+    background: #B8B8B8;
 }
 
 .box-friends .friends-list { 
     border-right: 1px solid #f6f8fc;
-    min-height: 30em;
 }
 
 .box-friends h3 { 
@@ -433,4 +465,13 @@ ul {
 #submit-album-to-trip button { 
     margin-top: 0em;
     float: left;
+}
+
+.box-peek .peeking { 
+    text-align: left;
+    margin-left: 1em
+}
+
+.box-peek .peek-img { 
+    width: 70%!important;
 }
