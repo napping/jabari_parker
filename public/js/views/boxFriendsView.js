@@ -6,7 +6,6 @@ define([
 		"text!../../templates/box-friends.html",
 
 	], function (	$, _, Backbone, vent,
-                    UserStatus,
                     boxFriendsTemplate
 				) { 
 

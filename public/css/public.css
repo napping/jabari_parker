@@ -256,7 +256,17 @@ ul {
     background: #909090;
 }
 
-.box-friends { 
+.box-friends div { 
+    margin-bottom: 15em;
+}
+
+.box-friends .friends-list { 
+    border-right: 1px solid #f6f8fc;
+    min-height: 30em;
+}
+
+.box-friends h3 { 
+    padding-left: 0.5em;
 }
 
 .box-friends ul li { 

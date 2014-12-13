@@ -15,7 +15,7 @@ define([
 			},
 
 			url: function () { 
-				return "/api/user/" + this.eid;	
+				return "/api/user/";	
 			},
 		});
 		

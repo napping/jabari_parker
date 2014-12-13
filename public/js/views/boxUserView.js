@@ -49,6 +49,7 @@ define([
 
             saveStatus: function () { 
                 var newText = $(".user-status > input").val();
+
                 if (true) { 
                     var newStatus = new UserStatus({ statusText: newText });
 

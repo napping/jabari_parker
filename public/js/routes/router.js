@@ -4,14 +4,17 @@ define([
 		"backbone",
 		"events",
 		"alertify",
-        "views/skeletonView",
-        "views/boxUserView",
         "models/users",
         "models/userStatuses",
+        "collections/userLists",
+        "views/skeletonView",
+        "views/boxUserView",
+        "views/boxFriendsView",
 
 	], function (	$, _, Backbone, vent, alertify,
-                    SkeletonView, BoxUserView,
-                    User, UserStatus
+                    User, UserStatus,
+                    UserList,
+                    SkeletonView, BoxUserView, BoxFriendsView
 				) { 
 
 		var Router = Backbone.Router.extend({
@@ -35,18 +38,18 @@ define([
 			},
 
 			loadIndex: function () { 
-                this.loadUser(123);     // TODO TESTING
+                this.loadUser();     // TODO TESTING
 			},
 
-            loadUser: function (eid) { 
+            loadUser: function () { 
                 this.user = new User();
                 
-                this.loadProfile(this.user);
-                this.loadFriends(this.user);
-                this.loadFriends(this.user);
+                this.renderProfile(this.user);
+                this.renderFriends(this.user);
+                this.renderPhotos(this.user);
             },
 
-            loadProfile: function (user) { 
+            renderProfile: function (user) { 
                 var router = this;
                 user.fetch({
                     success: function (model, response, options) { 
@@ -70,20 +73,40 @@ define([
                     },
                     error: function (model, response, options) { 
                         console.log();
-                        vent.trigger( "error", "Failed fetching user" + eid + "." + response );
+                        vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
                     },
                 });
             },
 
-            loadFriends: function (user) { 
+            renderFriends: function (user) { 
                 var friends = user.get("friends");
+
+                this.friendsCollection = new UserList();
+
+                var router = this;
                 for (eid in friends) { 
                     var friend = new User({ eid: eid });
-
+                    this.friendsCollection.add( friend );
                 }
+
+                this.boxFriendsView = new BoxFriendsView({ collection: this.friendsCollection });
+
+                $(".box-friends", this.el).html( this.boxFriendsView.render().el );
+                /*
+                this.friendsCollection.fetch({
+                    success: function (model, response, options) { 
+                        console.log("Got friend " + model);
+                    },
+
+                    error: function (model, response, options) { 
+                        vent.trigger( "error", "Could not fetch friend user " 
+                                     + model.get("eid") + ": " + response );
+                    }
+                });
+                */
             },
 
-            loadPhotos: function (user) { 
+            renderPhotos: function (user) { 
                 // TODO
             },
 
@@ -93,7 +116,6 @@ define([
 
             handleError: function (message) { 
 				message ? alertify.log( message, "error", 5000 ) : null;
-J
             },
 
 			goBack: function () { 
