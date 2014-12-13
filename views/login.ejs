@@ -34,10 +34,11 @@ $( function () {
             }
         });
     }
-    $("#submit-credentials").keypress(function (e) {
+    $("#submit-credentials").on( "keypress", function (e) {
     var key = e.which;
     if (key == 13)  
     {
+        console.log("enter pressed");
         submitPost();
     }
     });  

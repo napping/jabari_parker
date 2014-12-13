@@ -50,8 +50,10 @@ define([
 
                     var view = this;
                     newStatus.save( { statusText: newText }, { 
-                        success: function () { 
-                            view.render();
+                        success: function (model) { 
+                            console.log(model);
+                            view.model.set({ status: model.get("statusText") });
+                            $(".box-user").html( view.render().el );
                         },
                         error: function () { 
                             view.render();
