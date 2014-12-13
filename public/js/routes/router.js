@@ -39,21 +39,15 @@ define([
 			},
 
             loadUser: function (eid) { 
-                var testUser = new User({   // TODO TESTING
-                    eid: eid,
-                    email: "brishi@seas.upenn.edu",
-                    firstName: "Brian",
-                    lastName: "Shi",
-                    interests: ["playing", "working", "sleeping"],
-                    affiliation: "Philly",
-                    birthday: "April 6th, 1783",
-                });
-                // router.boxUserView = new BoxUserView({ model: testUser });
-                // $(".box-user").html( router.boxUserView.render().el );
-
-                var user = new User();
-                var router = this;
+                this.user = new User();
                 
+                this.loadProfile(this.user);
+                this.loadFriends(this.user);
+                this.loadFriends(this.user);
+            },
+
+            loadProfile: function (user) { 
+                var router = this;
                 user.fetch({
                     success: function (model, response, options) { 
                         var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
@@ -75,17 +69,31 @@ define([
                         });
                     },
                     error: function (model, response, options) { 
-                        console.log("Failed fetching user", eid, ".", response);
+                        console.log();
+                        vent.trigger( "error", "Failed fetching user" + eid + "." + response );
                     },
                 });
             },
 
-            renderMessage: function () { 
-                alertify.log( message );
+            loadFriends: function (user) { 
+                var friends = user.get("friends");
+                for (eid in friends) { 
+                    var friend = new User({ eid: eid });
+
+                }
+            },
+
+            loadPhotos: function (user) { 
+                // TODO
+            },
+
+            renderMessage: function (message) { 
+				message ? alertify.log( message, "success", 5000 ) : null;
             },
 
             handleError: function (message) { 
-                alertify.alert( message );
+				message ? alertify.log( message, "error", 5000 ) : null;
+J
             },
 
 			goBack: function () { 

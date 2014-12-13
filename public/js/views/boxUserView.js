@@ -40,7 +40,7 @@ define([
                 $(".user-status > input", this.el).focus().on( "blur", function () { 
                     view.saveStatus();
                 });
-                $(".user-status > input", this.el).keypress( function () { 
+                $(".user-status > input", this.el).keypress( function (e) { 
                     if (e.keyCode == 13) {
                         view.saveStatus();
                     }
