@@ -33,13 +33,17 @@ define([
             toggleStatus: function () { 
                 var view = this;
                 if (!this.statusEdit) { 
-                    console.log("Status is:", this.model.get("status"));
                     $(".user-status", this.el).html( "<input type=\"text\" value=\"" + this.model.get("status") + "\"></input" );
 
                     this.statusEdit = true;
                 } 
                 $(".user-status > input", this.el).focus().on( "blur", function () { 
                     view.saveStatus();
+                });
+                $(".user-status > input", this.el).keypress( function () { 
+                    if (e.keyCode == 13) {
+                        view.saveStatus();
+                    }
                 });
             },
 
@@ -51,9 +55,8 @@ define([
                     var view = this;
                     newStatus.save( { statusText: newText }, { 
                         success: function (model) { 
-                            console.log(model);
                             view.model.set({ status: model.get("statusText") });
-                            $(".box-user").html( view.render().el );
+                            view.render();
                         },
                         error: function () { 
                             view.render();

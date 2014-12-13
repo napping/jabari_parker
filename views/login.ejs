@@ -14,7 +14,7 @@
 </div>
 <script src="static/js/libs/jquery-2.1.1.js"></script>
 <script>
-$( function () { 
+$(document).ready( function () { 
     var submitPost = function () { 
         var email = $("#id-email").val();
         var password = $("#id-password").val();
@@ -34,16 +34,15 @@ $( function () {
             }
         });
     }
-    $("#submit-credentials").on( "keypress", function (e) {
-    var key = e.which;
-    if (key == 13)  
-    {
-        console.log("enter pressed");
-        submitPost();
-    }
-    });  
     $("#submit-credentials").on( "click", function () {
         submitPost();
     });
+    $("#id-password").keypress( function (e) {
+        var key = e.keyCode;
+        if (key == 13)  
+        {
+            submitPost();
+        }
+    });  
 });
 </script>

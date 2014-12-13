@@ -22,7 +22,6 @@ define([
 			},
 
 			initialize: function () {	// remove GET parameters on route?
-                console.log("initializing");
 				this.listenTo( vent, "message", function(message) {	    // TODO
 					this.renderMessage( message ); 
 				});	
@@ -57,10 +56,6 @@ define([
                 
                 user.fetch({
                     success: function (model, response, options) { 
-                        console.log("Success fetching user", eid, ".", response);
-                        console.log(model);
-                        console.log(model.get("statusEid"));
-
                         var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
                         userStatus.fetch({
                             success: function (userStatus, response, options) {
