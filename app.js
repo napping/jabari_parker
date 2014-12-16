@@ -43,7 +43,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
 
   app.post('/api/login', function (req, res) {
     if (!req.body.email || !req.body.password) {
-      res.write(JSON.stringify({ success: false }));
+      res.write(JSON.stringify({ valid: false, success: false }));
       res.end();
       return;
     }
@@ -61,7 +61,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
     };
     dynamodb.query(params, function (err, data) {
       if (err || !data.Items) {
-        res.write(JSON.stringify({ success: false }));
+        res.write(JSON.stringify({ valid: true, success: false }));
       } else {
         var password = data.Items[0].password.S;
         var sha256sum = crypto.createHash('sha256');
@@ -69,10 +69,10 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
         if (sha256sum.digest('hex') === password) {
           // user authentication successful
           req.session.eid = data.Items[0].eid.S;
-          res.write(JSON.stringify({ success: true }));
+          res.write(JSON.stringify({ valid: true, success: true }));
         } else {
           // user authentication failed
-          res.write(JSON.stringify({ success: false }));
+          res.write(JSON.stringify({ valid: true, success: false }));
         }
       }
       res.end();
@@ -80,8 +80,13 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
   });
 
   app.post('/api/logout', function (req, res) {
-    req.session.destroy();
+    if (req.session.eid) {
+      res.write(JSON.stringify({ valid: true, success: true }));
+    } else {
+      res.write(JSON.stringify({ valid: false, success: false }));
+    }
     res.end();
+    req.session.destroy();
   });
 
   app.get('/api/profile/:eid?', function (req, res) {
@@ -103,9 +108,10 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
       };
       dynamodb.getItem(params, function (err, data) {
         if (err || !data.Item) {
-          res.write(JSON.stringify({ success: false }));
+          res.write(JSON.stringify({ valid: true, success: false }));
         } else {
           res.write(JSON.stringify({
+            valid: true,
             success: true,
             statusEid: data.Item.statusEid.S,
             firstName: data.Item.firstName.S,
@@ -118,16 +124,14 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
         res.end();
       });
     } else {
-      res.write(JSON.stringify({
-        success: false
-      }));
+      res.write(JSON.stringify({ valid: false, success: false }));
       res.end();
     }
   });
 
   app.get('/api/entity/:eid', function (req, res) {
     if (!req.session.eid || !req.params.eid) {
-      res.write(JSON.stringify({ success: false }));
+      res.write(JSON.stringify({ valid: false, success: false }));
       res.end();
       return;
     }
@@ -141,9 +145,9 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
     };
     dynamodb.getItem(params, function (err, data) {
       if (err || !data.Item) {
-        res.write(JSON.stringify({ success: false }));
+        res.write(JSON.stringify({ valid: true, success: false }));
       } else {
-        var result = { success: true };
+        var result = { valid: true, success: true };
         for (var attr in data.Item) {
           for (var type in data.Item[attr]) {
             result[attr] = data.Item[attr][type];
@@ -157,7 +161,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
 
   app.post('/api/entity', function (req, res) {
     if (!req.session.eid || !req.body.statusText) {
-      res.write(JSON.stringify({ success: false }));
+      res.write(JSON.stringify({ valid: false, success: false }));
       res.end();
       return;
     }
@@ -174,7 +178,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
     }
     dynamodb.putItem(params, function (err, data) {
       if (err) {
-        res.write(JSON.stringify({ success: false }));
+        res.write(JSON.stringify({ valid: false, success: false }));
         res.end();
       } else {
         // update the current status attribute in the user table
@@ -190,10 +194,11 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'aws-sdk', 'crypt
         };
         dynamodb.updateItem(params2, function (err, data) {
           if (err) {
-            res.write(JSON.stringify({ success: false }));
+            res.write(JSON.stringify({ valid: true, success: false }));
           } else {
             // write the new status back to the client
             var result = {
+              valid: true,
               success: true,
               eid: params.Item.eid.S,
               ownerEid: params.Item.ownerEid.S,
