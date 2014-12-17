@@ -75,13 +75,13 @@ define([
                         user.set({ status: userStatus.get("statusText") }); 
 
                         router.boxUserView = new BoxUserView({ model: user });
-                        $(".box-user").html( router.boxUserView.render().el );
+                        router.renderFade( ".box-user", router.boxUserView );
                     },
                     error: function (userStatus, response, options) { 
                         console.log("Error getting user", user.get("firstName") + "'s status");
 
                         router.boxUserView = new BoxUserView({ model: user });
-                        $(".box-user").html( router.boxUserView.render().el );
+                        router.renderFade( ".box-user", router.boxUserView );
                     }
                 });
             },
@@ -97,14 +97,14 @@ define([
                                 model.set({ status: userStatus.get("statusText") }); 
 
                                 router.boxPeekView = new BoxPeekView({ model: model });
-                                $(".box-peek").html( router.boxPeekView.render().el );
+                                router.renderFade( ".box-peek", router.boxPeekView );
                             },
 
                             error: function (userStatus, response, options) { 
                                 console.log("Error getting user", model.get("firstName") + "'s status");
 
                                 router.boxPeekView = new BoxPeekView({ model: model });
-                                $(".box-peek").html( router.boxPeekView.render().el );
+                                router.renderFade( ".box-peek", router.boxPeekView );
                             },
                         });
                     },
@@ -121,7 +121,7 @@ define([
                 var friendEids = user.get("friendEids");
 
                 this.friendsCollection = new UserList({ friendEids: friendEids });
-                var view = this;
+                var router = this;
                 this.friendsCollection.fetch({
                     type: "POST",
 
@@ -132,9 +132,9 @@ define([
                     dataType: "json", 
 
                     success: function (collection, response, options) { 
-                        view.boxFriendsView = new BoxFriendsView({ collection: collection }); 
+                        router.boxFriendsView = new BoxFriendsView({ collection: collection }); 
 
-                        $(".box-friends").html( view.boxFriendsView.render().el );
+                        router.renderFade( ".box-friends", router.boxFriendsView );
                     },
 
                     error: function (model, response, options) { 
@@ -148,7 +148,7 @@ define([
             renderSpecial: function (user) { 
                 this.boxSpecialsView = new BoxSpecialsView();
 
-                $(".box-specials").html( this.boxSpecialsView.render().el );
+                this.renderFade( ".box-specials", this.boxSpecialsView );
             },
 
             renderPhotos: function (user) { 
@@ -164,13 +164,13 @@ define([
                     success: function (userStatus, response, options) {
                         friend.set({ status: userStatus.get("statusText") }); 
 
-                        $(".box-peek").html( router.boxPeekView.render().el );
+                        router.renderFade( ".box-peek", router.boxPeekView );
                     },
 
                     error: function (userStatus, response, options) { 
                         console.log("Error getting user", friend.get("firstName") + "'s status");
 
-                        $(".box-peek").html( router.boxPeekView.render().el );
+                        router.renderFade( ".box-peek", router.boxPeekView );
                     }
                 });
             },
@@ -181,6 +181,10 @@ define([
 
             handleError: function (message) { 
 				message ? alertify.log( message, "error", 5000 ) : null;
+            },
+
+            renderFade: function( selector, view ) { 
+                $(selector).hide().html( view.render().el ).fadeIn(1100);
             },
 
 			goBack: function () { 

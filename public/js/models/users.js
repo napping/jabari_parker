@@ -13,7 +13,7 @@ define([
                 interests:  [ "None" ],
                 affiliation: "None",
                 birthday: "Unknown",
-                status: "Enter Status",
+                status: "",
                 statusId: undefined,
                 friendEids: [],
 			},
