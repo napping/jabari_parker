@@ -199,6 +199,9 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       if (!req.session.eid) {
         res.status(401);
         res.end();
+      } else if (!req.params.eid || req.session.eid === req.params.eid) {
+        res.status(204);
+        res.end();
       } else {
         pennbookPost.changeFriend(operation, req.session.eid, req.params.eid,
             function (result) {
