@@ -114,4 +114,32 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       });
     }
   });
+
+  app.post('/api/friend/:eid', function (req, res) {
+    if (!req.session.eid) {
+      res.write(JSON.stringify({ valid: false, success: false }));
+      res.end();
+    } else {
+      pennbookPost.changeFriend('ADD', req.session.eid, req.params.eid,
+          function (result) {
+        result.valid = true;
+        res.write(JSON.stringify(result));
+        res.end();
+      });
+    }
+  });
+
+  app.post('/api/unfriend/:eid', function (req, res) {
+    if (!req.session.eid) {
+      res.write(JSON.stringify({ valid: false, success: false }));
+      res.end();
+    } else {
+      pennbookPost.changeFriend('DELETE', req.session.eid, req.params.eid,
+          function (result) {
+        result.valid = true;
+        res.write(JSON.stringify(result));
+        res.end();
+      });
+    }
+  });
 });

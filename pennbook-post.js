@@ -83,4 +83,38 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
       }
     });
   };
+
+  exports.changeFriend = function (operation, eid1, eid2, callback) {
+    var params1 = {
+      Key: {
+        eid: { S: eid1 }
+      },
+      TableName: 'users',
+      UpdateExpression: operation + ' #f :eid2',
+      ExpressionAttributeNames: { '#f': 'friendEids' },
+      ExpressionAttributeValues: { ':eid2': { SS: [eid2] } }
+    };
+    dynamodb.updateItem(params1, function (err, data) {
+      if (err) {
+        callback({ success: false });
+      } else {
+        var params2 = {
+          Key: {
+            eid: { S: eid2 }
+          },
+          TableName: 'users',
+          UpdateExpression: operation + ' #f :eid1',
+          ExpressionAttributeNames: { '#f': 'friendEids' },
+          ExpressionAttributeValues: { ':eid1': { SS: [eid1] } }
+        };
+        dynamodb.updateItem(params2, function (err, data) {
+          if (err) {
+            callback({ success: false });
+          } else {
+            callback({ success: true });
+          }
+        });
+      }
+    });
+  };
 });
