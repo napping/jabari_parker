@@ -14,7 +14,7 @@
     </h4>
     <div class="user-interests">
         <h5><%= firstName %> enjoys 
-            <% if (interests && interests.length != 0) { %>
+            <% if (interests && interests[0] != "None") { %>
                 <% for (var i = 0; i < interests.length - 1; i++) { %>
                     <%= interests[i] %>,
                 <% } %>
@@ -29,11 +29,11 @@
     </div>
     <div class="user-status">
         <div>
-        <% if (status) { %>
-            <%= status %>
-        <% } else { %>
-            ENTER STATUS
-        <% } %>
+            <% if (status) { %>
+                <%= status %>
+            <% } else { %>
+                ENTER STATUS
+            <% } %>
         </div>
     </div>
     <div class="view-select">

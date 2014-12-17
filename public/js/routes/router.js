@@ -30,8 +30,14 @@ define([
 				this.listenTo( vent, "message", function(message) {	    // TODO
 					this.renderMessage( message ); 
 				});	
+
 				this.listenTo( vent, "error", function(message) {	    // TODO
 					this.handleError( message ); 
+				});	
+
+				// this.listenTo( vent, "showFriend", function(eid) {	    // TODO
+				this.listenTo( vent, "showFriend", function(friend) {	    // TODO
+					this.renderFriendPeek( friend ); 
 				});	
 
                 this.skeletonView = new SkeletonView({ loggedIn: true });
@@ -115,6 +121,7 @@ define([
                 var friendEids = user.get("friendEids");
 
                 this.friendsCollection = new UserList({ friendEids: friendEids });
+                var view = this;
                 this.friendsCollection.fetch({
                     type: "POST",
 
@@ -124,9 +131,10 @@ define([
 
                     dataType: "json", 
 
-                    success: function (model, response, options) { 
-                        console.log("Got friend " + model);
-                        console.log(model);
+                    success: function (collection, response, options) { 
+                        view.boxFriendsView = new BoxFriendsView({ collection: collection }); 
+
+                        $(".box-friends").html( view.boxFriendsView.render().el );
                     },
 
                     error: function (model, response, options) { 
@@ -145,6 +153,26 @@ define([
 
             renderPhotos: function (user) { 
                 // TODO
+            },
+
+            renderFriendPeek: function (friend) { 
+                var router = this;
+                var userStatus = new UserStatus({ statusEid: friend.get("statusEid") });
+                router.boxPeekView = new BoxPeekView({ model: friend });
+
+                userStatus.fetch({
+                    success: function (userStatus, response, options) {
+                        friend.set({ status: userStatus.get("statusText") }); 
+
+                        $(".box-peek").html( router.boxPeekView.render().el );
+                    },
+
+                    error: function (userStatus, response, options) { 
+                        console.log("Error getting user", friend.get("firstName") + "'s status");
+
+                        $(".box-peek").html( router.boxPeekView.render().el );
+                    }
+                });
             },
 
             renderMessage: function (message) { 

@@ -13,33 +13,34 @@ define([
 			template: _.template( boxFriendsTemplate ),
 
 			initialize: function (options) { 
+                this.friendDirectory = {};  // for making easier friend hrefs, maps email to eid
+
 			}, 
 
             events: { 
+                "click a": "showFriend",
             },
 
 			render: function () { 
                 $(this.el).html( this.template() );
 
                 var view = this;
-                console.log(this.collection);
-                this.collection.fetch({
-                    success: function (collection, response, options) {
-                        this.collection.each( function (friend) { 
-                            console.log("friend: ", friend);
-                            view.addFriendLink(friend);
-                        });
-                    },
-                    error: function (collection, response, options) { 
-
-                    }
+                this.collection.each( function (friend) { 
+                    view.friendDirectory[ friend.get("email") ] = friend;
+                    view.addFriendLink(friend);
                 });
+
+
                 return this;
 			},
 
             addFriendLink: function (friend) { 
-                var linkTemplate = _.template( "<li><%= firstName %><%= lastName %></li>" );
+                var linkTemplate = _.template( "<li><a class=\"friend-link\" id=\"friend_" + friend.get("email") + "\"><%= firstName %> <%= lastName %><a></li>" );
                 $(".friends-list > ul", this.el).append( linkTemplate( friend.toJSON() ) );
+            },
+
+            showFriend: function (e) { 
+                vent.trigger( "showFriend", this.friendDirectory[(e.target.id).replace("friend_", "")]);
             }
 		});
 

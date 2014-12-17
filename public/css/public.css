@@ -5,6 +5,7 @@ body {
 
 a {
   color: #3137b6;
+  cursor: pointer;
 }
 .navbar-brand img { 
     height: 120%;
@@ -291,7 +292,8 @@ ul {
 }
 
 .box-friends ul li { 
-    padding: 1em;
+    margin: 1em;
+    margin-left: 2em;
 }
 
 .box-friends ul img { 

@@ -34,7 +34,11 @@ define([
 			},
 
             url: function () { 
-                return "/api/profile";
+                if (typeof(this.get("eid")) != "undefined") {      // this is a specific call
+                    return "/api/profile/" + this.get("eid");
+                } else { 
+                    return "/api/profile";
+                }
             }
 				
 		});

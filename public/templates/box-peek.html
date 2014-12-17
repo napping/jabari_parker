@@ -25,18 +25,26 @@
     </h4>
     <div class="user-interests">
         <h5><%= firstName %> enjoys 
-            <% for (var i = 0; i < interests.length - 1; i++) { %>
-                <%= interests[i] %>,
-            <% } %>
-            and 
-            <% if (interests.length > 0) { %>
-                <%= interests[interests.length - 1] %>.
+            <% if (interests && interests[0] != "None") { %>
+                <% for (var i = 0; i < interests.length - 1; i++) { %>
+                    <%= interests[i] %>,
+                <% } %>
+                and 
+                <% if (interests.length > 0) { %>
+                    <%= interests[interests.length - 1] %>.
+                <% } %>
+            <% } else {  %>
+                absolutely nothing.
             <% } %>
         </h5>
     </div>
     <div class="user-status">
         <div>
-            Write on <%= firstName %>'s wall?
+            <% if (status) { %>
+                <%= status %>
+            <% } else { %>
+                No status.
+            <% } %>
         </div>
     </div>
     <div class="view-select">
