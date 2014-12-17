@@ -88,6 +88,27 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     getEntity(req, res);
   });
 
+  app.get('/api/wall/:ownerEid/:timestamp?', function (req, res) {
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else {
+      var timestamp;
+      if (req.params.timestamp) {
+        timestamp = req.params.timestamp;
+      } else {
+        timestamp = Math.floor(new Date() / 1000) + 1;
+      }
+      pennbookGet.getWall(req.params.ownerEid, timestamp, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+      });
+    }
+  });
+
   app.get('/api/newsfeed/:timestamp?', function (req, res) {
     if (!req.session.eid) {
       res.status(401);

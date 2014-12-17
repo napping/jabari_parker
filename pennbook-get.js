@@ -82,50 +82,57 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
     });
   };
 
-  exports.getNewsfeed = function (ownerEid, timestamp, callback) {
-    var result = [];
-    var doRequest;
-    doRequest = function (lastEvaluated) {
-      var params = {
-        KeyConditions: {
-          ownerEid: {
-            ComparisonOperator: 'EQ',
-            AttributeValueList: [{ S: ownerEid }]
-          },
-          timestamp: {
-            comparisonOperator: 'LT',
-            AttributeValueList: [{ N: timestamp }],
-          }
-        },
-        TableName: 'entities',
-        IndexName: 'ownerEid-timestamp-index',
-        Limit: 15,
-        ScanIndexForward: false
-      };
-      if (lastEvaluated) {
-        params.ExclusiveStartKey = lastEvaluated;
-      }
-      dynamodb.query(params, function (err, data) {
-        if (err) {
-          callback(null);
-        } else {
-          for (var i = 0; i < data.Items.length; i++) {
-            var item = {};
-            for (var attr in data.Items[i]) {
-              for (var type in data.Items[i][attr]) {
-                item[attr] = data.Items[i][attr][type];
-              }
+  var makeTimestampQuery = function (filter) {
+    return function (ownerEid, timestamp, callback) {
+      var result = [];
+      var doQuery;
+      doQuery = function (lastEvaluated) {
+        var params = {
+          KeyConditions: {
+            ownerEid: {
+              ComparisonOperator: 'EQ',
+              AttributeValueList: [{ S: ownerEid }]
+            },
+            timestamp: {
+              comparisonOperator: 'LT',
+              AttributeValueList: [{ N: timestamp }],
             }
-            result.push(item);
-          }
-          if (data.LastEvaluatedKey.ownerEid) {
-            doRequest(data.LastEvaluatedKey);
-          } else {
-            callback(result);
-          }
+          },
+          TableName: 'entities',
+          IndexName: 'ownerEid-timestamp-index',
+          Limit: 15,
+          ScanIndexForward: false
+        };
+        if (filter) {
+          params.FilterExpression = filter;
         }
-      });
+        if (lastEvaluated) {
+          params.ExclusiveStartKey = lastEvaluated;
+        }
+        dynamodb.query(params, function (err, data) {
+          if (err) {
+            callback(null);
+          } else {
+            for (var i = 0; i < data.Items.length; i++) {
+              var item = {};
+              for (var attr in data.Items[i]) {
+                for (var type in data.Items[i][attr]) {
+                  item[attr] = data.Items[i][attr][type];
+                }
+              }
+              result.push(item);
+            }
+            if (data.LastEvaluatedKey.ownerEid) {
+              doQuery(data.LastEvaluatedKey);
+            } else {
+              callback(result);
+            }
+          }
+        });
+      };
+      doQuery(null);
     };
-    doRequest(null);
   };
+  exports.getWall = makeTimestampQuery('type = "wallPost"');
+  exports.getNewsfeed = makeTimestampQuery(null);
 });
