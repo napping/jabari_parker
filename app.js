@@ -96,7 +96,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       res.status(204);
       res.end();
     } else {
-      pennbookGet.batchGetEntity(req.body.eids, function (result) {
+      pennbookGet.batchGetProfile(req.body.eids, function (result) {
         if (result) {
           res.write(JSON.stringify(result));
         } else {
