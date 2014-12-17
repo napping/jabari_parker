@@ -172,37 +172,24 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
-  app.post('/api/friend/:eid', function (req, res) {
-    if (!req.session.eid) {
-      res.status(401);
-      res.end();
-    } else {
-      pennbookPost.changeFriend('ADD', req.session.eid, req.params.eid,
-          function (result) {
-        if (result) {
-          res.write(JSON.stringify(result));
-        } else {
-          res.status(500);
-        }
+  var changeFriend = function (operation) {
+    return function (req, res) {
+      if (!req.session.eid) {
+        res.status(401);
         res.end();
-      });
-    }
-  });
-
-  app.post('/api/unfriend/:eid', function (req, res) {
-    if (!req.session.eid) {
-      res.status(401);
-      res.end();
-    } else {
-      pennbookPost.changeFriend('DELETE', req.session.eid, req.params.eid,
-          function (result) {
-        if (result) {
-          res.write(JSON.stringify(result));
-        } else {
-          res.status(500);
-        }
-        res.end();
-      });
-    }
-  });
+      } else {
+        pennbookPost.changeFriend(operation, req.session.eid, req.params.eid,
+            function (result) {
+          if (result) {
+            res.write(JSON.stringify(result));
+          } else {
+            res.status(500);
+          }
+          res.end();
+        });
+      }
+    };
+  };
+  app.post('/api/friend/:eid', changeFriend('ADD'));
+  app.post('/api/unfriend/:eid', changeFriend('DELETE'));
 });
