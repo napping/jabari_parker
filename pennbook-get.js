@@ -80,7 +80,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
     });
   };
 
-  var makeTimestampQuery = function (filter) {
+  var makeTimestampQuery = function (filter, attributeNames, attributeValues) {
     return function (ownerEids, timestamp, callback) {
       var result = [];
       var doQuery;
@@ -92,8 +92,8 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
               AttributeValueList: []
             },
             timestamp: {
-              comparisonOperator: 'LT',
-              AttributeValueList: [{ N: timestamp }],
+              ComparisonOperator: 'LT',
+              AttributeValueList: [{ N: timestamp.toString() }],
             }
           },
           TableName: 'entities',
@@ -106,6 +106,8 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
         }
         if (filter) {
           params.FilterExpression = filter;
+          params.ExpressionAttributeNames = attributeNames;
+          params.ExpressionAttributeValues = attributeValues;
         }
         if (lastEvaluated) {
           params.ExclusiveStartKey = lastEvaluated;
@@ -123,7 +125,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
               }
               result.push(item);
             }
-            if (data.LastEvaluatedKey.ownerEid) {
+            if (data.LastEvaluatedKey) {
               doQuery(data.LastEvaluatedKey);
             } else {
               callback(result);
@@ -135,12 +137,13 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
     };
   };
   exports.getWall = function (ownerEid, timestamp, callback) {
-    makeTimestampQuery('type = "wallPost"')([ownerEid], timestamp, callback);
+    makeTimestampQuery('#t = :type', { '#t': 'type' }, { ':type': { S: 'wallPost' } })
+      ([ownerEid], timestamp, callback);
   };
   exports.getNewsfeed = function (userEid, timestamp, callback) {
     exports.getProfile(userEid, function (result) {
       if (result) {
-        makeTimestampQuery(null)([result.friendEids], timestamp, callback);
+        makeTimestampQuery()([result.friendEids], timestamp, callback);
       } else {
         callback(null);
       }

@@ -109,6 +109,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
         } else {
           res.status(500);
         }
+        res.end();
       });
     }
   });
