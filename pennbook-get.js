@@ -29,19 +29,23 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
 
   exports.getEntity = function (eid, callback) {
     var params = {
-      Item: {
-        eid: { S: eid }
+      KeyConditions: {
+        eid: {
+          ComparisonOperator: 'EQ',
+          AttributeValueList: [{ S: eid }]
+        }
       },
-      TableName: 'entities'
+      TableName: 'entities',
+      Limit: 1
     };
-    dynamodb.getItem(params, function (err, data) {
-      if (err || !data.Item) {
+    dynamodb.query(params, function (err, data) {
+      if (err || !data.Items) {
         callback({ success: false });
       } else {
         var result = { success: true };
-        for (var attr in data.Item) {
-          for (var type in data.Item[attr]) {
-            result[attr] = data.Item[attr][type];
+        for (var attr in data.Items[0]) {
+          for (var type in data.Items[0][attr]) {
+            result[attr] = data.Items[0][attr][type];
           }
         }
         callback(result);
