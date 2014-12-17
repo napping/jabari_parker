@@ -285,16 +285,7 @@ ul {
 }
 
 
-.box-friends .friends-list:hover { 
-    background: #B8B8B8;
-}
-
-.box-friends .network-list:hover { 
-    background: #B8B8B8;
-}
-
 .box-friends .friends-list { 
-    border-right: 1px solid #f6f8fc;
 }
 
 .box-friends h3 { 
