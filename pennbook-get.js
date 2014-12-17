@@ -149,11 +149,16 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
   };
   exports.getNewsfeed = function (userEid, timestamp, callback) {
     exports.getProfile(userEid, function (result) {
-      if (result) {
-        makeTimestampQuery()([result.friendEids], timestamp, callback);
+      var newsfeedEids;
+      if (result && result.friendEids) {
+        newsfeedEids = result.friendEids.concat([userEid]);
+      } else if (result) {
+        newsfeedEids = [userEid];
       } else {
         callback(null);
+        return;
       }
+      makeTimestampQuery()(newsfeedEids, timestamp, callback);
     });
   };
 });
