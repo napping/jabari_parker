@@ -20,7 +20,10 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
       ProjectionExpression: 'eid, password'
     };
     dynamodb.query(params, function (err, data) {
-      if (err || !data.Items) {
+      if (err) {
+        console.log(err);
+        callback(null);
+      } else if (!data.Items) {
         callback(null);
       } else {
         var storedPassword = data.Items[0].password.S;
@@ -50,6 +53,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     };
     dynamodb.putItem(putParams, function (err, data) {
       if (err) {
+        console.log(err);
         callback(null);
       } else {
         // update the current status and child entity set in the users table
@@ -64,6 +68,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         };
         dynamodb.updateItem(updateParams, function (err, data) {
           if (err) {
+            console.log(err);
             callback(null);
           } else {
             var result = {};
@@ -93,6 +98,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     };
     dynamodb.putItem(putParams, function (err, data) {
       if (err) {
+        console.log(err);
         callback(null);
       } else {
         var result = {};
@@ -118,6 +124,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     };
     dynamodb.updateItem(params1, function (err, data) {
       if (err) {
+        console.log(err);
         callback(null);
       } else {
         var params2 = {
@@ -131,6 +138,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         };
         dynamodb.updateItem(params2, function (err, data) {
           if (err) {
+            console.log(err);
             callback(null);
           } else {
             callback({});

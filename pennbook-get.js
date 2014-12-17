@@ -13,8 +13,11 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
       TableName: 'users',
     };
     dynamodb.getItem(params, function (err, data) {
-      if (err || !data.Item) {
+      if (err) {
+        console.log(err);
         callback(null);
+      } else if (!data.Item) {
+        callback({});
       } else {
         var result = {};
         for (var attr in data.Item) {
@@ -40,6 +43,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
     }
     dynamodb.batchGetItem(params, function (err, data) {
       if (err) {
+        console.log(err);
         callback(null);
       } else {
         var result = [];
@@ -65,9 +69,11 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
       TableName: 'entities'
     };
     dynamodb.getItem(params, function (err, data) {
-      if (err || !data.Item) {
+      if (err) {
         console.log(err);
         callback(null);
+      } else if (!data.Item) {
+        callback({});
       } else {
         var result = {};
         for (var attr in data.Item) {
@@ -114,6 +120,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
         }
         dynamodb.query(params, function (err, data) {
           if (err) {
+            console.log(err);
             callback(null);
           } else {
             for (var i = 0; i < data.Items.length; i++) {
