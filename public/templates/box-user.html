@@ -14,12 +14,16 @@
     </h4>
     <div class="user-interests">
         <h5><%= firstName %> enjoys 
-            <% for (var i = 0; i < interests.length - 1; i++) { %>
-                <%= interests[i] %>,
-            <% } %>
-            and 
-            <% if (interests.length > 0) { %>
-                <%= interests[interests.length - 1] %>.
+            <% if (interests && interests.length != 0) { %>
+                <% for (var i = 0; i < interests.length - 1; i++) { %>
+                    <%= interests[i] %>,
+                <% } %>
+                and 
+                <% if (interests.length > 0) { %>
+                    <%= interests[interests.length - 1] %>.
+                <% } %>
+            <% } else {  %>
+                absolutely nothing.
             <% } %>
         </h5>
     </div>
@@ -34,11 +38,10 @@
     </div>
     <div class="view-select">
         <select class="form-control">
-
-            <option>Feed &#10148;</option>
-            <option>Wall &#10148;</option>
-            <option>Photos &#10148;</option>
-            <option>Edit &#10148;</option>
+            <option class="select-feed">Feed &#10148;</option>
+            <option class="select-wall">Wall &#10148;</option>
+            <option class="select-photos">Pics &#10148;</option>
+            <option class="select-edit">Edit &#10148;</option>
         </select>
     </div>
 

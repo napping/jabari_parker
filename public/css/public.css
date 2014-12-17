@@ -260,7 +260,7 @@ ul {
 
 .view-select { 
     margin-top: 2em;
-    padding: 0em 40%;
+    padding: 0em 41.5%;
 }
 
 .view-select select { 
@@ -491,6 +491,9 @@ ul {
     border-radius: 2px;
 }
 
+.button-hover { 
+    background: #fff;
+}
 .button-hover:hover { 
     background: #F8F8F8;
 }

@@ -93,14 +93,16 @@ define([
                                 router.boxPeekView = new BoxPeekView({ model: model });
                                 $(".box-peek").html( router.boxPeekView.render().el );
                             },
+
                             error: function (userStatus, response, options) { 
                                 console.log("Error getting user", model.get("firstName") + "'s status");
 
                                 router.boxPeekView = new BoxPeekView({ model: model });
                                 $(".box-peek").html( router.boxPeekView.render().el );
-                            }
+                            },
                         });
                     },
+
                     error: function (model, response, options) { 
                         console.log();
                         vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
@@ -118,10 +120,13 @@ define([
 
                     data: JSON.stringify({ eids: friendEids }),
 
+                    contentType: 'application/json',
+
                     dataType: "json", 
 
                     success: function (model, response, options) { 
                         console.log("Got friend " + model);
+                        console.log(model);
                     },
 
                     error: function (model, response, options) { 
