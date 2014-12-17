@@ -479,7 +479,7 @@ ul {
 }
 
 .select-content { 
-    margin-top: 55%;
+    margin-top: 50%;
     text-align: center;
 }
 
@@ -498,4 +498,9 @@ ul {
 }
 .button-hover:hover { 
     background: #F8F8F8;
+}
+
+.creep-suggestion { 
+    text-align: center;
+    margin-top: 50%;
 }

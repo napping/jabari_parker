@@ -26,6 +26,7 @@ define([
 
                 var view = this;
                 this.collection.each( function (friend) { 
+                    friend.set({ areFriends: true });
                     view.friendDirectory[ friend.get("email") ] = friend;
                     view.addFriendLink(friend);
                 });

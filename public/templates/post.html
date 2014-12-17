@@ -1,0 +1,11 @@
+<li>
+    <%= user.firstName %> wrote: <%= text %>
+    <% if (comments) { %>
+        <% for (var i = 0; i < comments.length; i++) { %>
+            <div class="wall-post-comment">
+                <p><%= coments[i] %></p>
+            </div>
+        <% } %>
+    <% } else { %>
+    <% } %>
+</li>

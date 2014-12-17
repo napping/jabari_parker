@@ -7,16 +7,18 @@ define([
         "models/users",
         "models/userStatuses",
         "collections/userLists",
+        "collections/wallpostLists",
         "views/skeletonView",
         "views/boxUserView",
         "views/boxPeekView",
         "views/boxFriendsView",
         "views/boxSpecialsView",
+        "views/boxWallView",
 
 	], function (	$, _, Backbone, vent, alertify,
                     User, UserStatus,
-                    UserList,
-                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView, BoxSpecialsView
+                    UserList, WallPostList,
+                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView, BoxSpecialsView, BoxWallView
 				) { 
 
 		var Router = Backbone.Router.extend({
@@ -35,9 +37,12 @@ define([
 					this.handleError( message ); 
 				});	
 
-				// this.listenTo( vent, "showFriend", function(eid) {	    // TODO
 				this.listenTo( vent, "showFriend", function(friend) {	    // TODO
 					this.renderFriendPeek( friend ); 
+				});	
+
+				this.listenTo( vent, "showWall", function() {	    // TODO
+					this.renderWall(); 
 				});	
 
                 this.skeletonView = new SkeletonView({ loggedIn: true });
@@ -52,13 +57,13 @@ define([
             loadUser: function () { 
                 this.user = new User();
                 
-                var view = this;
-                view.user.fetch({
+                var router = this;
+                router.user.fetch({
                     success: function (model, response, options) { 
-                        view.renderProfile(view.user);
-                        view.renderPeek(view.user);     // TODO, test
-                        view.renderFriends(view.user);
-                        view.renderSpecial(view.user);
+                        router.renderProfile(router.user);
+                        router.renderPeek(router.user);     // TODO, test
+                        router.renderFriends(router.user);
+                        router.renderSpecial(router.user);
 
                     },
                     error: function (model, response, options) { 
@@ -88,6 +93,8 @@ define([
 
             renderPeek: function (user) {
                 var router = this;
+                $(".box-peek").hide().html("<h3 class='creep-suggestion'>Creep on somebody!</h3>").fadeIn();
+/*                
                 user.fetch({
                     success: function (model, response, options) { 
                         var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
@@ -114,11 +121,11 @@ define([
                         vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
                     },
                 });
- 
+ */
             },
 
             renderFriends: function (user) { 
-                var friendEids = user.get("friendEids");
+                var friendEids = user.get("friendEids") ? user.get("friendEids") : [];
 
                 this.friendsCollection = new UserList({ friendEids: friendEids });
                 var router = this;
@@ -149,6 +156,28 @@ define([
                 this.boxSpecialsView = new BoxSpecialsView();
 
                 this.renderFade( ".box-specials", this.boxSpecialsView );
+            },
+
+            renderWall: function () { 
+                var router = this;
+                var wallPostCollection = new WallPostList({ eid: router.user.get("eid") });
+
+                this.wallPostCollection.fetch({
+                    success: function (collection, response, options) { 
+                        router.boxUser2View = new BoxWallView({ collection: collection }); 
+
+                        router.renderFade( ".box-peek2", router.boxUser2View );
+                    },
+
+                    error: function (model, response, options) { 
+                        vent.trigger( "error", "Could not fetch wall posts for user" + router.user.get("email") + " response: " + response );
+                    }
+                });
+
+
+                router.boxWallView = new BoxWallView({ collection: null });
+
+                router.renderWall
             },
 
             renderPhotos: function (user) { 

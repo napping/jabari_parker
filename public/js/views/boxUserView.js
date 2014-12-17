@@ -33,7 +33,7 @@ define([
             toggleStatus: function () { 
                 var view = this;
                 if (!this.statusEdit) { 
-                    $(".user-status", this.el).html( "<input type=\"text\" value=\"" + this.model.get("status") + "\"></input" );
+                    $(".user-status", this.el).html( "<input type=\"text\" value=\"" + this.model.get("status") + "\" maxlength=\"65\"></input" );
 
                     this.statusEdit = true;
                 } 

@@ -20,7 +20,7 @@ define([
                     this.areFriends = true;
                 }
 
-                if (this.model) { 
+                if (!this.model.get("areFriends")) { 
                     this.model.set({ areFriends: this.areFriends });
                 }
 			}, 
