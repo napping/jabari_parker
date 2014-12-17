@@ -75,6 +75,10 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     getEntity(req, res);
   });
 
+  app.get('/api/wallPost/:eid', function (req, res) {
+    getEntity(req, res);
+  });
+
   app.post('/api/login', function (req, res) {
     if (!req.body.email || !req.body.password) {
       res.write(JSON.stringify({ valid: false, success: false }));
@@ -107,6 +111,20 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       res.end();
     } else {
       pennbookPost.saveStatus(req.session.eid, req.body.statusText,
+          function (result) {
+        result.valid = true;
+        res.write(JSON.stringify(result));
+        res.end();
+      });
+    }
+  });
+
+  app.post('/api/wallPost', function (req, res) {
+    if (!req.session.eid || !req.body.postText) {
+      res.write(JSON.stringify({ valid: false, success: false }));
+      res.end();
+    } else {
+      pennbookPost.saveWallPost(req.session.eid, req.body.postText,
           function (result) {
         result.valid = true;
         res.write(JSON.stringify(result));

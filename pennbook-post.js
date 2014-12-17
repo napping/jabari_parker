@@ -84,6 +84,46 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     });
   };
 
+  exports.saveWallPost = function (ownerEid, postText, callback) {
+    var putParams = {
+      Item: {
+        eid: { S: uuid.v4() },
+        timestamp: { N: Math.floor(new Date() / 1000).toString() },
+        type: { S: 'wallPost' },
+        postText: { S: postText }
+      },
+      TableName: 'entities'
+    };
+    dynamodb.putItem(putParams, function (err, data) {
+      if (err) {
+        callback({ success: false });
+      } else {
+        var updateParams = {
+          Key: {
+            eid: { S: ownerEid }
+          },
+          TableName: 'users',
+          UpdateExpression: 'ADD #o :eid',
+          ExpressionAttributeNames: { '#o': 'ownedEids' },
+          ExpressionAttributeValues: { ':eid': { SS: [putParams.Item.eid.S] } }
+        };
+        dynamodb.updateItem(updateParams, function (err, data) {
+          if (err) {
+            callback({ success: false });
+          } else {
+            var result = { success: true };
+            for (var attr in putParams.Item) {
+              for (var type in putParams.Item[attr]) {
+                result[attr] = putParams.Item[attr][type];
+              }
+            }
+            callback(result);
+          }
+        });
+      }
+    });
+  };
+
   exports.changeFriend = function (operation, eid1, eid2, callback) {
     var params1 = {
       Key: {
