@@ -19,13 +19,18 @@ define([
 			}, 
 
             events: { 
-                "click .user-status": "toggleStatus"
+                "click .user-status": "toggleStatus",
+                "change .select-content-type": "handleSelect",
             },
 
 			render: function () { 
                 _.bind( this.saveStatus, { this: this} );
 
                 $(this.el).html( this.template( this.model.toJSON() ) );
+
+                $(".select-content-type").change( function () { 
+                    console.log("changed");
+                });
 
                 return this;
 			},
@@ -49,7 +54,7 @@ define([
             },
 
             saveStatus: function () { 
-                var newText = $(".user-status > input").val();
+                var newText = $(".user-status > input", this.el).val();
 
                 if (newText != this.model.get("status")) { 
                     var newStatus = new UserStatus({ statusText: newText });
@@ -70,7 +75,46 @@ define([
                 this.render();
 
                 this.statusEdit = false;
-            }
+            },
+
+            handleSelect: function () { 
+                var selected = $(".select-content-type", this.el).val();
+                switch (selected) { 
+                    case "feed":
+                        this.showFeed(this.model);
+                        break;
+
+                    case "wall":
+                        this.showWall(this.model);
+                        break;
+
+                    case "photos":
+                        this.showPhotos(this.model);
+                        break;
+
+                    case "edit":
+                        this.showEdit(this.model);
+                        break;
+
+                }
+            },
+
+            showFeed: function (user) { 
+                vent.trigger( "showFeed", user );
+            },
+
+            showWall: function (user) { 
+                vent.trigger( "showWall", user );
+            },
+
+            showPhotos: function (user) { 
+                vent.trigger( "showPhotos", user );
+            },
+
+            showEdit: function (user) { 
+                vent.trigger( "showEdit", user );
+            },
+
 		});
 
 		return BoxUserView;

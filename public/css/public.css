@@ -504,3 +504,45 @@ ul {
     text-align: center;
     margin-top: 50%;
 }
+
+.write-post {
+    padding: 2% 4%;
+    padding-right: 0;
+    width: 92%;
+    height: 4.5em;
+}
+
+.write-post .input-wallpost {
+    float: left;
+    padding-left: 5%;
+    padding-right: 15%;
+    width: 80%;
+}
+
+.write-post button {
+    float: left;
+    margin-left: 1.5em;
+}
+
+.wall-posts { 
+    padding: 1em;
+}
+
+.select-content-type { 
+    font-size: 95%;
+}
+
+.box-edit .profile-input { 
+    padding: 1em;
+}
+
+.box-edit .profile-input input { 
+    width: 90%;
+    margin: auto;
+    margin-bottom: 1.5em;
+}
+
+.box-edit input { 
+
+}
+

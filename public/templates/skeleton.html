@@ -9,7 +9,7 @@
         <ul class="nav navbar-nav navbar-float-right">
             <li><a href="static/about">About PennBook</a></li>
             <% if (loggedIn) { %>
-            <li><a href="static/logout">Logout</a></li>
+            <li><a href="/api/logout">Logout</a></li>
             <% } else { %>
             <li><a href="/">Login</a></li>
             <li class="active"><a href="static/register">Create Account</a></li>

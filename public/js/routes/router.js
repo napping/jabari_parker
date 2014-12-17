@@ -14,11 +14,12 @@ define([
         "views/boxFriendsView",
         "views/boxSpecialsView",
         "views/boxWallView",
+        "views/boxEditView",
 
 	], function (	$, _, Backbone, vent, alertify,
                     User, UserStatus,
                     UserList, WallPostList,
-                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView, BoxSpecialsView, BoxWallView
+                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView, BoxSpecialsView, BoxWallView, BoxEditView
 				) { 
 
 		var Router = Backbone.Router.extend({
@@ -41,8 +42,28 @@ define([
 					this.renderFriendPeek( friend ); 
 				});	
 
-				this.listenTo( vent, "showWall", function() {	    // TODO
-					this.renderWall(); 
+				this.listenTo( vent, "showFeed", function(user) {	    // TODO
+					this.renderFeed(user); 
+				});	
+
+				this.listenTo( vent, "showWall", function(user) {	    // TODO
+					this.renderWall(user); 
+				});	
+
+				this.listenTo( vent, "showPhotos", function(user) {	    // TODO
+					this.renderPhotos(user); 
+				});	
+
+				this.listenTo( vent, "showEdit", function(user) {	    // TODO
+					this.renderEdit(user); 
+				});	
+
+				this.listenTo( vent, "showPeekWall", function(user) {	    // TODO
+					this.renderPeekWall(user); 
+				});	
+
+				this.listenTo( vent, "showPeekPhotos", function(user) {	    // TODO
+					this.renderPeekPhotos(user); 
 				});	
 
                 this.skeletonView = new SkeletonView({ loggedIn: true });
@@ -64,6 +85,15 @@ define([
                         router.renderPeek(router.user);     // TODO, test
                         router.renderFriends(router.user);
                         router.renderSpecial(router.user);
+
+
+
+
+                        router.renderWall(router.user);  // TODO TESTING!!!!!!!!!
+
+
+
+
 
                     },
                     error: function (model, response, options) { 
@@ -126,29 +156,38 @@ define([
 
             renderFriends: function (user) { 
                 var friendEids = user.get("friendEids") ? user.get("friendEids") : [];
-
-                this.friendsCollection = new UserList({ friendEids: friendEids });
                 var router = this;
-                this.friendsCollection.fetch({
-                    type: "POST",
+                this.friendsCollection = new UserList({ friendEids: friendEids });
 
-                    data: JSON.stringify({ eids: friendEids }),
+                if (friendEids.length > 0) { 
+                    this.friendsCollection.fetch({
+                        type: "POST",
 
-                    contentType: 'application/json',
+                        data: JSON.stringify({ eids: friendEids }),
 
-                    dataType: "json", 
+                        contentType: 'application/json',
 
-                    success: function (collection, response, options) { 
-                        router.boxFriendsView = new BoxFriendsView({ collection: collection }); 
+                        dataType: "json", 
 
-                        router.renderFade( ".box-friends", router.boxFriendsView );
-                    },
+                        success: function (collection, response, options) { 
+                            router.boxFriendsView = new BoxFriendsView({ collection: collection }); 
 
-                    error: function (model, response, options) { 
-                        vent.trigger( "error", "Could not fetch friend user " 
-                                     + model.get("eid") + ": " + response );
-                    }
-                });
+                            router.renderFade( ".box-friends", router.boxFriendsView );
+                        },
+
+                        error: function (model, response, options) { 
+                            vent.trigger( "error", "Could not fetch friend user " 
+                                         + model.get("eid") + ": " + response );
+
+                            router.boxFriendsView = new BoxFriendsView({ collection: router.friendsCollection }); 
+                            router.renderFade( ".box-friends", router.boxFriendsView );
+                        }
+                    });
+                } else { 
+                    router.boxFriendsView = new BoxFriendsView({ collection: router.friendsCollection }); 
+
+                    router.renderFade( ".box-friends", router.boxFriendsView );
+                }
 
             },
 
@@ -158,36 +197,67 @@ define([
                 this.renderFade( ".box-specials", this.boxSpecialsView );
             },
 
-            renderWall: function () { 
+            renderFeed: function () { 
+                console.log("rendering feed");
+            },
+
+            renderWall: function (user) { 
                 var router = this;
-                var wallPostCollection = new WallPostList({ eid: router.user.get("eid") });
+                var wallPostCollection = new WallPostList({ eid: user.get("eid") });
+                router.boxUser2View = new BoxWallView({ collection: wallPostCollection, userEid: user.get("eid"), canPost: false }); 
 
-                this.wallPostCollection.fetch({
+                wallPostCollection.fetch({
                     success: function (collection, response, options) { 
-                        router.boxUser2View = new BoxWallView({ collection: collection }); 
+                        router.renderFade( ".box-user2", router.boxUser2View );
+                    },
 
+                    error: function (model, response, options) { 
+                        vent.trigger( "error", "Could not fetch wall posts for user" + router.user.get("email") + " response: " + response );
+
+                        router.renderFade( ".box-user2", router.boxUser2View );
+                    }
+                });
+
+            },
+
+            renderPhotos: function (user) { 
+                console.log("rendering photos");
+            },
+
+            renderEdit: function (user) { 
+                console.log("rendering edit");
+                var router = this;
+                router.boxUser2View = new BoxEditView({ model: router.user });
+                router.renderFade( ".box-user2", router.boxUser2View );
+            },
+
+            renderPeekWall: function (user) { 
+                var router = this;
+                var wallPostCollection = new WallPostList({ eid: user.get("eid") });
+                router.boxUser2View = new BoxWallView({ collection: wallPostCollection, canPost: true }); 
+
+                wallPostCollection.fetch({
+                    success: function (collection, response, options) { 
                         router.renderFade( ".box-peek2", router.boxUser2View );
                     },
 
                     error: function (model, response, options) { 
                         vent.trigger( "error", "Could not fetch wall posts for user" + router.user.get("email") + " response: " + response );
+
+                        router.renderFade( ".box-peek2", router.boxUser2View );
                     }
                 });
 
-
-                router.boxWallView = new BoxWallView({ collection: null });
-
-                router.renderWall
             },
 
-            renderPhotos: function (user) { 
-                // TODO
+            renderPeekPhotos: function (user) { 
+                console.log("rendering peek photos");
             },
 
             renderFriendPeek: function (friend) { 
                 var router = this;
                 var userStatus = new UserStatus({ statusEid: friend.get("statusEid") });
-                router.boxPeekView = new BoxPeekView({ model: friend });
+                router.boxPeekView = new BoxPeekView({ model: friend, areFriends: true });
 
                 userStatus.fetch({
                     success: function (userStatus, response, options) {

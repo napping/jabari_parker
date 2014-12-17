@@ -7,19 +7,25 @@ define([
 	], function ($, _, Backbone, vent) { 
 		var WallPost = Backbone.Model.extend({ 
 			defaults: { 
-				text: "",
+				postText: "",
                 comments: [],
+                owner: "An unknown person",
 			},
 
 			idAttribute: "eid",
 
-			initialize: function () { 
+			initialize: function (options) { 
+                if (options.ownerEid) { 
+                    this.ownerEid = options.ownerEid;
+                }
 			},
 
 			validate: function () { // not sure if necessary
 			},
 
-            urlRoot: "/api/wallPost/",
+            urlRoot: function () {  // for posting, the GETS are handled in batches
+                return "/api/wallPost/" + this.ownerEid;
+            },
 				
 		});
 		

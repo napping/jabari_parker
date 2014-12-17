@@ -10,6 +10,7 @@ define([
 				firstName: "John",
 				lastName: "Smith",
                 interests:  [ "None" ],
+                interestsString: "None",
                 affiliation: "None",
                 birthday: "Unknown",
                 status: "",
