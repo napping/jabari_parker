@@ -21,17 +21,17 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     };
     dynamodb.query(params, function (err, data) {
       if (err || !data.Items) {
-        callback({ success: false });
+        callback(null);
       } else {
         var storedPassword = data.Items[0].password.S;
         var sha256sum = crypto.createHash('sha256');
         sha256sum.update(password);
         if (sha256sum.digest('hex') === storedPassword) {
           // user authentication successful
-          callback({ success: true, eid: data.Items[0].eid.S });
+          callback({ eid: data.Items[0].eid.S });
         } else {
           // user authentication failed
-          callback({ success: false });
+          callback(null);
         }
       }
     });
@@ -50,7 +50,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     };
     dynamodb.putItem(putParams, function (err, data) {
       if (err) {
-        callback({ success: false });
+        callback(null);
       } else {
         // update the current status and child entity set in the users table
         var updateParams = {
@@ -64,9 +64,9 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         };
         dynamodb.updateItem(updateParams, function (err, data) {
           if (err) {
-            callback({ success: false });
+            callback(null);
           } else {
-            var result = { success: true };
+            var result = {};
             for (var attr in putParams.Item) {
               for (var type in putParams.Item[attr]) {
                 result[attr] = putParams.Item[attr][type];
@@ -92,9 +92,9 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     };
     dynamodb.putItem(putParams, function (err, data) {
       if (err) {
-        callback({ success: false });
+        callback(null);
       } else {
-        var result = { success: true };
+        var result = {};
         for (var attr in putParams.Item) {
           for (var type in putParams.Item[attr]) {
             result[attr] = putParams.Item[attr][type];
@@ -117,7 +117,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     };
     dynamodb.updateItem(params1, function (err, data) {
       if (err) {
-        callback({ success: false });
+        callback(null);
       } else {
         var params2 = {
           Key: {
@@ -130,9 +130,9 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         };
         dynamodb.updateItem(params2, function (err, data) {
           if (err) {
-            callback({ success: false });
+            callback(null);
           } else {
-            callback({ success: true });
+            callback({});
           }
         });
       }

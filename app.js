@@ -48,24 +48,33 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
     if (req.session.eid) {
       pennbookGet.getProfile(eid, function (result) {
-        result.valid = true;
-        res.write(JSON.stringify(result));
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
         res.end();
       });
     } else {
-      res.write(JSON.stringify({ valid: false, success: false }));
+      res.status(401);
       res.end();
     }
   });
 
   var getEntity = function (req, res) {
-    if (!req.session.eid || !req.params.eid) {
-      res.write(JSON.stringify({ valid: false, success: false }));
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else if (!req.params.eid) {
+      res.status(204);
       res.end();
     } else {
       pennbookGet.getEntity(req.params.eid, function (result) {
-        result.valid = true;
-        res.write(JSON.stringify(result));
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
         res.end();
       });
     }
@@ -81,53 +90,64 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
 
   app.post('/api/login', function (req, res) {
     if (!req.body.email || !req.body.password) {
-      res.write(JSON.stringify({ valid: false, success: false }));
+      res.status(204);
       res.end();
     } else {
       pennbookPost.login(req.body.email, req.body.password, function (result) {
-        result.valid = true;
-        if (result.success) {
+        if (result) {
           req.session.eid = result.eid;
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
         }
-        res.write(JSON.stringify(result));
         res.end();
       });
     }
   });
 
   app.post('/api/logout', function (req, res) {
-    if (req.session.eid) {
-      res.write(JSON.stringify({ valid: true, success: true }));
-    } else {
-      res.write(JSON.stringify({ valid: false, success: false }));
+    if (!req.session.eid) {
+      res.status(500);
     }
     res.end();
     req.session.destroy();
   });
 
   app.post('/api/status', function (req, res) {
-    if (!req.session.eid || !req.body.statusText) {
-      res.write(JSON.stringify({ valid: false, success: false }));
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else if (!req.body.statusText) {
+      res.status(204);
       res.end();
     } else {
       pennbookPost.saveStatus(req.session.eid, req.body.statusText,
           function (result) {
-        result.valid = true;
-        res.write(JSON.stringify(result));
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
         res.end();
       });
     }
   });
 
   app.post('/api/wallPost', function (req, res) {
-    if (!req.session.eid || !req.body.postText) {
-      res.write(JSON.stringify({ valid: false, success: false }));
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else if (!req.body.postText) {
+      res.status(204);
       res.end();
     } else {
       pennbookPost.saveWallPost(req.session.eid, req.body.postText,
           function (result) {
-        result.valid = true;
-        res.write(JSON.stringify(result));
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
         res.end();
       });
     }
@@ -135,13 +155,16 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
 
   app.post('/api/friend/:eid', function (req, res) {
     if (!req.session.eid) {
-      res.write(JSON.stringify({ valid: false, success: false }));
+      res.status(401);
       res.end();
     } else {
       pennbookPost.changeFriend('ADD', req.session.eid, req.params.eid,
           function (result) {
-        result.valid = true;
-        res.write(JSON.stringify(result));
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
         res.end();
       });
     }
@@ -149,13 +172,16 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
 
   app.post('/api/unfriend/:eid', function (req, res) {
     if (!req.session.eid) {
-      res.write(JSON.stringify({ valid: false, success: false }));
+      res.status(401);
       res.end();
     } else {
       pennbookPost.changeFriend('DELETE', req.session.eid, req.params.eid,
           function (result) {
-        result.valid = true;
-        res.write(JSON.stringify(result));
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
         res.end();
       });
     }
