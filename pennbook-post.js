@@ -41,6 +41,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     var putParams = {
       Item: {
         eid: { S: uuid.v4() },
+        ownerEid: { S: ownerEid },
         timestamp: { N: Math.floor(new Date() / 1000).toString() },
         type: { S: 'status' },
         statusText: { S: statusText }
@@ -57,15 +58,9 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
             eid: { S: ownerEid }
           },
           TableName: 'users',
-          UpdateExpression: 'SET #s = :eid ADD #o :eidSet',
-          ExpressionAttributeNames: {
-            '#s': 'statusEid',
-            '#o': 'ownedEids'
-          },
-          ExpressionAttributeValues: {
-            ':eid': { S: putParams.Item.eid.S },
-            ':eidSet': { SS: [putParams.Item.eid.S] }
-          }
+          UpdateExpression: 'SET #s = :eid',
+          ExpressionAttributeNames: { '#s': 'statusEid' },
+          ExpressionAttributeValues: { ':eid': { S: putParams.Item.eid.S } }
         };
         dynamodb.updateItem(updateParams, function (err, data) {
           if (err) {
@@ -88,6 +83,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     var putParams = {
       Item: {
         eid: { S: uuid.v4() },
+        ownerEid: { S: ownerEid },
         timestamp: { N: Math.floor(new Date() / 1000).toString() },
         type: { S: 'wallPost' },
         postText: { S: postText }
@@ -98,28 +94,13 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
       if (err) {
         callback({ success: false });
       } else {
-        var updateParams = {
-          Key: {
-            eid: { S: ownerEid }
-          },
-          TableName: 'users',
-          UpdateExpression: 'ADD #o :eid',
-          ExpressionAttributeNames: { '#o': 'ownedEids' },
-          ExpressionAttributeValues: { ':eid': { SS: [putParams.Item.eid.S] } }
-        };
-        dynamodb.updateItem(updateParams, function (err, data) {
-          if (err) {
-            callback({ success: false });
-          } else {
-            var result = { success: true };
-            for (var attr in putParams.Item) {
-              for (var type in putParams.Item[attr]) {
-                result[attr] = putParams.Item[attr][type];
-              }
-            }
-            callback(result);
+        var result = { success: true };
+        for (var attr in putParams.Item) {
+          for (var type in putParams.Item[attr]) {
+            result[attr] = putParams.Item[attr][type];
           }
-        });
+        }
+        callback(result);
       }
     });
   };
