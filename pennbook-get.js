@@ -60,15 +60,13 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
   exports.getEntity = function (eid, callback) {
     var params = {
       Key: {
-        eid: {
-          ComparisonOperator: 'EQ',
-          AttributeValueList: [{ S: eid }]
-        }
+        eid: { S: eid }
       },
       TableName: 'entities'
     };
     dynamodb.getItem(params, function (err, data) {
       if (err || !data.Item) {
+        console.log(err);
         callback(null);
       } else {
         var result = {};
