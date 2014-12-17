@@ -92,11 +92,11 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     if (!req.session.eid) {
       res.status(401);
       res.end();
-    } else if (!req.params.eids) {
+    } else if (!req.body.eids) {
       res.status(204);
       res.end();
     } else {
-      pennbookGet.batchGetEntity(req.params.eids, function (result) {
+      pennbookGet.batchGetEntity(req.body.eids, function (result) {
         if (result) {
           res.write(JSON.stringify(result));
         } else {
