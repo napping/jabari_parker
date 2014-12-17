@@ -156,12 +156,12 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     if (!req.session.eid) {
       res.status(401);
       res.end();
-    } else if (!req.body.postText) {
+    } else if (!req.body.ownerEid || !req.body.postText) {
       res.status(204);
       res.end();
     } else {
-      pennbookPost.saveWallPost(req.session.eid, req.body.postText,
-          function (result) {
+      pennbookPost.saveWallPost(req.session.eid, req.body.ownerEid,
+          req.body.postText, function (result) {
         if (result) {
           res.write(JSON.stringify(result));
         } else {

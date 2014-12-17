@@ -79,13 +79,14 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     });
   };
 
-  exports.saveWallPost = function (ownerEid, postText, callback) {
+  exports.saveWallPost = function (posterEid, ownerEid, postText, callback) {
     var putParams = {
       Item: {
         eid: { S: uuid.v4() },
         ownerEid: { S: ownerEid },
         timestamp: { N: Math.floor(new Date() / 1000).toString() },
         type: { S: 'wallPost' },
+        posterEid: { S: posterEid },
         postText: { S: postText }
       },
       TableName: 'entities'
