@@ -58,7 +58,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
-  app.get('/api/entity/:eid', function (req, res) {
+  var getEntity = function (req, res) {
     if (!req.session.eid || !req.params.eid) {
       res.write(JSON.stringify({ valid: false, success: false }));
       res.end();
@@ -69,6 +69,10 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
         res.end();
       });
     }
+  };
+
+  app.get('/api/status/:eid', function (req, res) {
+    getEntity(req, res);
   });
 
   app.post('/api/login', function (req, res) {

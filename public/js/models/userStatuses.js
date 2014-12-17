@@ -21,7 +21,7 @@ define([
 			validate: function () { // not sure if necessary
 			},
 
-            urlRoot: "/api/entity/"
+            urlRoot: "/api/status/"
 				
 		});
 		

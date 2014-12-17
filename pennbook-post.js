@@ -28,7 +28,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         sha256sum.update(password);
         if (sha256sum.digest('hex') === storedPassword) {
           // user authentication successful
-          callback({ success: true, eid: data.Items[0].password.S });
+          callback({ success: true, eid: data.Items[0].eid.S });
         } else {
           // user authentication failed
           callback({ success: false });
@@ -43,7 +43,6 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         eid: { S: uuid.v4() },
         timestamp: { N: Math.floor(new Date() / 1000).toString() },
         type: { S: 'status' },
-        childEids: { SS: [] },
         statusText: { S: statusText }
       },
       TableName: 'entities'
@@ -58,8 +57,15 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
             eid: { S: ownerEid }
           },
           TableName: 'users',
-          UpdateExpression: 'SET statusEid=:eid, ADD childEids=[:eid]',
-          ExpressionAttributeValues: { ':eid': putParams.Item.eid }
+          UpdateExpression: 'SET #s = :eid ADD #o :eidSet',
+          ExpressionAttributeNames: {
+            '#s': 'statusEid',
+            '#o': 'ownedEids'
+          },
+          ExpressionAttributeValues: {
+            ':eid': { S: putParams.Item.eid.S },
+            ':eidSet': { SS: [putParams.Item.eid.S] }
+          }
         };
         dynamodb.updateItem(updateParams, function (err, data) {
           if (err) {
@@ -71,6 +77,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
                 result[attr] = putParams.Item[attr][type];
               }
             }
+            callback(result);
           }
         });
       }
