@@ -83,7 +83,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
   };
 
   var makeTimestampQuery = function (filter) {
-    return function (ownerEid, timestamp, callback) {
+    return function (ownerEids, timestamp, callback) {
       var result = [];
       var doQuery;
       doQuery = function (lastEvaluated) {
@@ -91,7 +91,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
           KeyConditions: {
             ownerEid: {
               ComparisonOperator: 'EQ',
-              AttributeValueList: [{ S: ownerEid }]
+              AttributeValueList: []
             },
             timestamp: {
               comparisonOperator: 'LT',
@@ -103,6 +103,9 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
           Limit: 15,
           ScanIndexForward: false
         };
+        for (var i = 0; i < ownerEids.length; i++) {
+          params.KeyConditions.ownerEid.AttributeValueList.push({ S: ownerEids[i] });
+        }
         if (filter) {
           params.FilterExpression = filter;
         }
@@ -133,6 +136,16 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
       doQuery(null);
     };
   };
-  exports.getWall = makeTimestampQuery('type = "wallPost"');
-  exports.getNewsfeed = makeTimestampQuery(null);
+  exports.getWall = function (ownerEid, timestamp, callback) {
+    makeTimestampQuery('type = "wallPost"')([ownerEid], timestamp, callback);
+  };
+  exports.getNewsfeed = function (userEid, timestamp, callback) {
+    exports.getProfile(userEid, function (result) {
+      if (result) {
+        makeTimestampQuery(null)([result.friendEids], timestamp, callback);
+      } else {
+        callback(null);
+      }
+    });
+  };
 });
