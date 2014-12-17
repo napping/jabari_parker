@@ -15,9 +15,16 @@ define([
 			template: _.template( boxPeekTemplate ),
 
 			initialize: function (options) { 
+                this.areFriends = false;
+                if (options && options.areFriends) { 
+                    this.areFriends = true;
+                }
+
+                this.model.set({ areFriends: this.areFriends });
 			}, 
 
             events: { 
+                "click .button-add-friend": "addFriend",
             },
 
 			render: function () { 
@@ -26,11 +33,12 @@ define([
                 return this;
 			},
 
-            toggleStatus: function () { 
+            addFriend: function () { 
+                if (this.areFriends == false) { 
+
+                }
             },
 
-            saveStatus: function () { 
-            }
 		});
 
 		return BoxPeekView;

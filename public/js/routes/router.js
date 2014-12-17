@@ -11,11 +11,12 @@ define([
         "views/boxUserView",
         "views/boxPeekView",
         "views/boxFriendsView",
+        "views/boxSpecialsView",
 
 	], function (	$, _, Backbone, vent, alertify,
                     User, UserStatus,
                     UserList,
-                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView
+                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView, BoxSpecialsView
 				) { 
 
 		var Router = Backbone.Router.extend({
@@ -45,36 +46,37 @@ define([
             loadUser: function () { 
                 this.user = new User();
                 
-                this.renderProfile(this.user);
-                this.renderPeek(this.user);     // TODO, test
-                this.renderFriends(this.user);
+                var view = this;
+                view.user.fetch({
+                    success: function (model, response, options) { 
+                        view.renderProfile(view.user);
+                        view.renderPeek(view.user);     // TODO, test
+                        view.renderFriends(view.user);
+                        view.renderSpecial(view.user);
 
+                    },
+                    error: function (model, response, options) { 
+                        vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
+                    },
+                });
             },
 
             renderProfile: function (user) { 
                 var router = this;
-                user.fetch({
-                    success: function (model, response, options) { 
-                        var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
-                        userStatus.fetch({
-                            success: function (userStatus, response, options) {
-                                model.set({ status: userStatus.get("statusText") }); 
+                var userStatus = new UserStatus({ statusEid: user.get("statusEid") });
+                userStatus.fetch({
+                    success: function (userStatus, response, options) {
+                        user.set({ status: userStatus.get("statusText") }); 
 
-                                router.boxUserView = new BoxUserView({ model: model });
-                                $(".box-user").html( router.boxUserView.render().el );
-                            },
-                            error: function (userStatus, response, options) { 
-                                console.log("Error getting user", model.get("firstName") + "'s status");
+                        router.boxUserView = new BoxUserView({ model: user });
+                        $(".box-user").html( router.boxUserView.render().el );
+                    },
+                    error: function (userStatus, response, options) { 
+                        console.log("Error getting user", user.get("firstName") + "'s status");
 
-                                router.boxUserView = new BoxUserView({ model: model });
-                                $(".box-user").html( router.boxUserView.render().el );
-                            }
-                        });
-                    },
-                    error: function (model, response, options) { 
-                        console.log();
-                        vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
-                    },
+                        router.boxUserView = new BoxUserView({ model: user });
+                        $(".box-user").html( router.boxUserView.render().el );
+                    }
                 });
             },
 
@@ -83,6 +85,7 @@ define([
                 user.fetch({
                     success: function (model, response, options) { 
                         var userStatus = new UserStatus({ statusEid: model.get("statusEid") });
+
                         userStatus.fetch({
                             success: function (userStatus, response, options) {
                                 model.set({ status: userStatus.get("statusText") }); 
@@ -107,21 +110,16 @@ define([
             },
 
             renderFriends: function (user) { 
-                var friends = user.get("friends");
+                var friendEids = user.get("friendEids");
 
-                this.friendsCollection = new UserList();
-
-                var router = this;
-                for (eid in friends) { 
-                    var friend = new User({ eid: eid });
-                    this.friendsCollection.add( friend );
-                }
-
-                this.boxFriendsView = new BoxFriendsView({ collection: this.friendsCollection });
-
-                $(".box-friends", this.el).html( this.boxFriendsView.render().el );
-                /*
+                this.friendsCollection = new UserList({ friendEids: friendEids });
                 this.friendsCollection.fetch({
+                    type: "POST",
+
+                    data: JSON.stringify({ eids: friendEids }),
+
+                    dataType: "json", 
+
                     success: function (model, response, options) { 
                         console.log("Got friend " + model);
                     },
@@ -131,7 +129,13 @@ define([
                                      + model.get("eid") + ": " + response );
                     }
                 });
-                */
+
+            },
+
+            renderSpecial: function (user) { 
+                this.boxSpecialsView = new BoxSpecialsView();
+
+                $(".box-specials").html( this.boxSpecialsView.render().el );
             },
 
             renderPhotos: function (user) { 

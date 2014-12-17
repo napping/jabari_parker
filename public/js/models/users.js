@@ -15,6 +15,7 @@ define([
                 birthday: "Unknown",
                 status: "Enter Status",
                 statusId: undefined,
+                friendEids: [],
 			},
 
 			idAttribute: "eid",

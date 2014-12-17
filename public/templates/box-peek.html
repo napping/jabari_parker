@@ -1,5 +1,15 @@
 <div class="box box-portrait box-peek">
-    <h3 class="peeking">Peeking...</h3>
+    <div class="peeking-header">
+        <h4 class="peeking-header-text">Creeping...</h4>
+        <button class="btn btn-small button-add-friends button-hover">
+            <% if (areFriends) { %>
+                &#x2713; Friends
+            <% } else { %>
+                Add Friend
+            <% } %>
+        </button>
+    </div>
+
     <% if (false) { %>
         <img class="peek-img" src="static/images/<%= url %>"/>
     <% } else { %>
