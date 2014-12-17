@@ -1,4 +1,3 @@
-
 <html lang="en">
     <head>
 		<title>PennBook</title>
@@ -21,29 +20,28 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-float-right">
                     <li><a href="static/about">About PennBook</a></li>
-                    <li><a href="/createAccount">Create Account</a></li>
+                    <li><a href="/">Login</a></li>
 
                 </div><!--/.nav-collapse -->
             </div>
         </div>
 
-        <div class="logo">
-            <img src="static/images/filler.jpg">
-        </div>
-        <div class="enter-credentials">
-            <h3>Login</h3>
-            <div>
-                <label for="id-email">Username: </label>
-                <input id="id-email" class="form-contol" name="email" type="text" maxlength="64">
-            </div>
-            <div>
-                <label for="id-password">Password: </label>
-                <input id="id-password" class="form-contol" name="password" type="password" maxlength="256">
-            </div>
+        <div class="enter-account">
+            <h3>Register Account</h3>
+            <label for="enter-email">Email:</label>
+            <input type="text" class="form-control" id="enter-email" value=""></input>
+            <label for="enter-email">Password:</label>
+            <input type="text" class="form-control" id="enter-password" value=""></input>
+            <label for="enter-first-name">First name:</label>
+            <input type="text" class="form-control" id="enter-first-name" value=""></input>
+            <label for="enter-last-name">Last name:</label>
+            <input type="text" class="form-control" id="enter-last-name" value=""></input>
+            <label for="enter-affiliation">Affiliation:</label>
+            <input type="text" class="form-control" id="enter-affiliation" value=""></input>
+            <label for="enter-interests">Interests: (Enter as list separated by commas)</label>
+            <input type="text" class="form-control" id="enter-interests" value=""></input>
 
-            <div class="submit-credentials">
-                <a><button class="form-contol btn btn-default" id="submit-credentials">Submit</button></a>
-            </div>
+            <button type="submit" class="btn btn-small button-hover submit-account">Save</button>
         </div>
 
 
@@ -57,16 +55,28 @@
         <script>
         $(document).ready( function () { 
             var submitPost = function () { 
-                var email = $("#id-email").val();
-                var password = $("#id-password").val();
-
-                var credentials = {};
-                credentials.email = email;
-                credentials.password = password;
+                var credentials = {
+                    email: $("#enter-email").val(),
+                    password: $("#enter-password").val(),
+                    firstName: $("#enter-first-name").val(),
+                    lastName: $("#enter-last-name").val(),
+                    affiliation: $("#enter-affiliation").val(),
+                    interests: $("#enter-interests", this.el).val().split(", "),
+                };
+                if (
+                    !credentials.email ||
+                    !credentials.password ||
+                    !credentials.firstName ||
+                    !credentials.lastName ||
+                    !credentials.affiliation ||
+                    !credentials.interests 
+                ) { 
+                    alert("Please fill out all fields.");
+                }
 
                 $.ajax({
                     'type': 'POST',
-                    'url': '/api/login',
+                    'url': '/api/createAccount',
                     'contentType': 'application/json',
                     'data': JSON.stringify(credentials),
                     'dataType': 'json',
@@ -75,16 +85,11 @@
                     }
                 });
             }
-            $("#submit-credentials").on( "click", function () {
+
+            $(".submit-account").on( "click", function () {
+console.log("clicked");
                 submitPost();
             });
-            $("#id-password").keypress( function (e) {
-                var key = e.keyCode;
-                if (key == 13)  
-                {
-                    submitPost();
-                }
-            });  
         });
         </script>
     </body>

@@ -39,6 +39,10 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     res.end();
   });
 
+  app.get('/createAccount', function (req, res) { 
+      res.render("createAccount");
+  });
+
   app.get('/api/profile/:eid?', function (req, res) {
     var eid;
     if (req.params.eid) {
@@ -238,4 +242,5 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
   };
   app.post('/api/friend/:eid', changeFriend('ADD'));
   app.post('/api/unfriend/:eid', changeFriend('DELETE'));
+
 });

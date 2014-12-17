@@ -7,19 +7,21 @@ define([
         "models/users",
         "models/userStatuses",
         "collections/userLists",
+        "collections/feedLists",
         "collections/wallpostLists",
         "views/skeletonView",
         "views/boxUserView",
         "views/boxPeekView",
         "views/boxFriendsView",
         "views/boxSpecialsView",
+        "views/boxFeedView",
         "views/boxWallView",
         "views/boxEditView",
 
 	], function (	$, _, Backbone, vent, alertify,
                     User, UserStatus,
-                    UserList, WallPostList,
-                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView, BoxSpecialsView, BoxWallView, BoxEditView
+                    UserList, NewsFeedList, WallPostList,
+                    SkeletonView, BoxUserView, BoxPeekView, BoxFriendsView, BoxSpecialsView, BoxFeedView, BoxWallView, BoxEditView
 				) { 
 
 		var Router = Backbone.Router.extend({
@@ -197,14 +199,29 @@ define([
                 this.renderFade( ".box-specials", this.boxSpecialsView );
             },
 
-            renderFeed: function () { 
+            renderFeed: function (user) { 
                 console.log("rendering feed");
+                var router = this;
+                var newsFeedCollection = new NewsFeedList({ eid: user.get("eid") });
+                router.boxUser2View = new BoxFeedView({ collection: newsFeedCollection, ownerEid: user.get("eid"), canPost: false }); 
+
+                newsFeedCollection.fetch({ 
+                    success: function (collection, response, options) { 
+                        router.renderFade( ".box-user2", router.boxUser2View );
+                    },
+
+                    error: function (model, response, options) { 
+                        vent.trigger( "error", "Could not fetch news feed for user" + router.user.get("email") + " response: " + response );
+                    }
+                });
+                
+
             },
 
             renderWall: function (user) { 
                 var router = this;
                 var wallPostCollection = new WallPostList({ eid: user.get("eid") });
-                router.boxUser2View = new BoxWallView({ collection: wallPostCollection, userEid: user.get("eid"), canPost: false }); 
+                router.boxUser2View = new BoxWallView({ collection: wallPostCollection, ownerEid: user.get("eid"), canPost: false }); 
 
                 wallPostCollection.fetch({
                     success: function (collection, response, options) { 

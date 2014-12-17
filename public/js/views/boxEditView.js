@@ -34,7 +34,6 @@ define([
                 var newAffiliation = $("#change-affiliation", this.el).val();
                 var newInterests = $("#change-interests", this.el).val().split(", ");
 
-                console.log(newInterests);
                 this.model.set({ 
                     firstName: newFirstName,
                     lastName: newLastName,
