@@ -236,7 +236,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
-  app.post('/api/profile', function (req, res) {
+  app.put('/api/profile', function (req, res) {
     if (!req.session.eid)  {
       res.status(401);
       res.end();
