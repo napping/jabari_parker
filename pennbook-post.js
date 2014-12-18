@@ -85,7 +85,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
         ':affiliation': { S: affiliation },
         ':interests': { SS: interests }
       },
-      ReturnValues: 'ALL_UPDATED'
+      ReturnValues: 'UPDATED_NEW'
     };
     dynamodb.updateItem(updateParams, function (err, data) {
       if (err) {
