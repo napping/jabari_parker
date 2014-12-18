@@ -224,7 +224,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
           },
           TableName: 'entities'
         };
-        dynamodb.putItem(params, function (err, callback) {
+        dynamodb.putItem(params, function (err, data) {
           if (err) {
             console.log(err);
             callback(null);
