@@ -40,6 +40,29 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     });
   };
 
+  exports.register = function (email, password, firstName, lastName, callback) {
+    var sha256sum = crypto.createHash('sha256');
+    sha256sum.update(password);
+    var params = {
+      Item: {
+        eid: { S: uuid.v4() },
+        email: { S: email },
+        password: { S: sha256sum.digest('hex') },
+        firstName: { S: firstName },
+        lastName: { S: lastName }
+      },
+      TableName: 'users'
+    };
+    dynamodb.putItem(params, function (err, data) {
+      if (err) {
+        console.log(err);
+        callback(null);
+      } else {
+        callback({});
+      }
+    });
+  };
+
   exports.saveStatus = function (ownerEid, statusText, callback) {
     var putParams = {
       Item: {
