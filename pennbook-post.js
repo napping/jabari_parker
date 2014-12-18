@@ -71,8 +71,8 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
         eid: { S: eid }
       },
       TableName: 'users',
-      UpdateExpression: 'SET #fn = :firstName SET #ln = :lastName ' + 
-        'SET #a = :affiliation SET #i = :interests',
+      UpdateExpression: 'SET #fn = :firstName #ln = :lastName ' +
+          '#a = :affiliation #i = :interests',
       ExpressionAttributeNames: {
         '#fn': 'firstName',
         '#ln': 'lastName',
