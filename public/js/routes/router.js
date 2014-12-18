@@ -29,6 +29,7 @@ define([
 				"": "loadIndex",
                 "user/:eid": "loadUser",
                 "back": "goBack",
+                "changePeekWall/:eid": "changePeekWall",
 			},
 
 			initialize: function () {	// remove GET parameters on route?
@@ -99,7 +100,7 @@ define([
 
                     },
                     error: function (model, response, options) { 
-                        vent.trigger( "error", "Failed fetching user " + eid + ": " + response );
+                        vent.trigger( "error", "Failed fetching user " + router.user.get("email") + ": " + response );
                     },
                 });
             },
@@ -186,6 +187,7 @@ define([
                         }
                     });
                 } else { 
+                    router.friendsCollection = new UserList([]);
                     router.boxFriendsView = new BoxFriendsView({ collection: router.friendsCollection }); 
 
                     router.renderFade( ".box-friends", router.boxFriendsView );
@@ -202,20 +204,19 @@ define([
             renderFeed: function (user) { 
                 console.log("rendering feed");
                 var router = this;
-                var newsFeedCollection = new NewsFeedList({ eid: user.get("eid") });
-                router.boxUser2View = new BoxFeedView({ collection: newsFeedCollection, ownerEid: user.get("eid"), canPost: false }); 
+                router.boxUser2View = new BoxFeedView({ data: [] }); 
 
-                newsFeedCollection.fetch({ 
-                    success: function (collection, response, options) { 
-                        router.renderFade( ".box-user2", router.boxUser2View );
-                    },
-
-                    error: function (model, response, options) { 
-                        vent.trigger( "error", "Could not fetch news feed for user" + router.user.get("email") + " response: " + response );
+                $.get( "/api/newsfeed", function (data) { 
+                    if (!data) { 
+                        vent.trigger( "error", 
+                                     "Could not fetch news feed for user" 
+                                     + router.user.get("email"));
+                        router.boxUser2View = new BoxFeedView({ data: [] });
+                    } else { 
+                        router.boxUser2View = new BoxFeedView({ data: data });
                     }
-                });
-                
-
+                    router.renderFade( ".box-user2", router.boxUser2View );
+                }, "json" );
             },
 
             renderWall: function (user) { 
@@ -287,6 +288,23 @@ define([
                         console.log("Error getting user", friend.get("firstName") + "'s status");
 
                         router.renderFade( ".box-peek", router.boxPeekView );
+                    }
+                });
+            },
+
+            changePeekWall: function (eid) { 
+                this.navigate("/");
+
+                var person = new User({ eid: eid });
+                var router = this;
+                person.fetch({ 
+                    success: function (model) { 
+                        router.renderFriendPeek(model);
+                        router.renderPeekWall(model);
+                    },
+
+                    error: function (model, reponse) { 
+                        vent.trigger( "error", "Error peeking user:" + response );
                     }
                 });
             },

@@ -563,4 +563,7 @@ ul {
     margin-left: 1em;
 }
 
-
+.news-feed ul li{ 
+    margin-left: 2em;
+    margin-right: 1em;
+}

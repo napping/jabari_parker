@@ -1,5 +1,7 @@
 <li>
-    <a href="#changePeekWall/<%= person1.eid %>"><%= person1.firstName %> <%= person1.lastName %> wrote: <%= postText %>
+    <p>
+        <a href="#changePeekWall/<%= person1.eid %>"> <%= person1.firstName %> <%= person1.lastName %></a> became friends with <a href="#changePeekWall/<%= person2.eid %>"><%= person2.firstName %> <%= person2.lastName %></a>.
+    </p>
     <% if (comments) { %>
         <% for (var i = 0; i < comments.length; i++) { %>
             <div class="wall-post-comment">
@@ -9,3 +11,5 @@
     <% } else { %>
     <% } %>
 </li>
+
+

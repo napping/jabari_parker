@@ -14,7 +14,7 @@ define([
                 affiliation: "None",
                 birthday: "Unknown",
                 status: "",
-                statusId: undefined,
+                statusEid: undefined,
                 friendEids: [],
 			},
 
