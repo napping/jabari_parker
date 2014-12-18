@@ -31,6 +31,9 @@ define([
                     view.addFriendLink(friend);
                 });
 
+                if (this.collection.length == 0) { 
+                    $(".friends-list > ul", this.el).append("<li><h5>No friends yet.</h5></li>");
+                }
 
                 return this;
 			},

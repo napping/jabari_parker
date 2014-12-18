@@ -39,6 +39,9 @@ define([
                     view.addPost(post);
                 });
 
+                if (this.collection.length == 0) { 
+                    $(".wall-posts > ul", this.el).append("<li><h5>No posts yet.</h5></li>");
+                }
 
                 return this;
 			},

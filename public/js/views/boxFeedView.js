@@ -3,22 +3,28 @@ define([
 		"underscore",
 		"backbone",
 		"events",
-        "models/wallposts",
+        "models/users",
 		"text!../../templates/box-feed.html",
-		"text!../../templates/post.html",
+		"text!../../templates/li-new-status.html",
+		"text!../../templates/li-friendship.html",
+		"text!../../templates/li-profile-update.html",
+		"text!../../templates/li-wall-post.html",
 
 	], function (	$, _, Backbone, vent,
-                    FeedModel,
-                    boxFeedTemplate, postTemplate
+                    User,
+                    boxFeedTemplate, 
+                    liNewStatusTemplate, liFriendshipTemplate, liProfileUpdateTemplate, liWallPostTemplate
 				) { 
 
 		var BoxFeedView = Backbone.View.extend({ 
 			template: _.template( boxFeedTemplate ),
 
 			initialize: function (options) { 
-                if (options.ownerEid) { 
-                    this.ownerEid = options.ownerEid;
+                this.data = [];
+                if (options) { 
+                    this.data = options.data;
                 }
+                console.log(this.data);
 			}, 
 
             events: { 
@@ -28,18 +34,52 @@ define([
                 $(this.el).html( this.template() );
 
                 var view = this;
-                this.collection.each( function (post) { 
-                    view.addPost(post);
-                });
+                for (var i = 0; i < this.data.length; i++) { 
+                    view.appendPost(this.data[i]);
+                }
 
+                if (this.data.length == 0) { 
+                    $(".news-feed > ul", this.el).append("<li><h5>No feed yet.</h5></li>");
+                }
 
                 return this;
 			},
 
-            addPost: function (post) { 
-                var postHTML = _.template( postTemplate );
+            appendPost: function (post) { 
+                console.log("POST: ", post);
+                var view = this;
+                var templator; 
+                switch (post.type) { 
+                    case "status":
+                        templator = _.template( liNewStatusTemplate );
 
-                $(".news-feed > ul", this.el).append( postHTML( post.toJSON() ) );
+                        var person1 = new User({ eid: post.ownerEid });
+                        person1.fetch({ 
+                            success: function (model) { 
+                                console.log(model.toJSON());
+                                post["person1"] = model.toJSON();
+                                $(".news-feed > ul", view.el).append( templator( post ) );
+                            },
+
+                            error: function (model, response) { 
+                                console.log("Error get status feed");
+                            }
+                        });
+                        break;
+
+                    case "friendship":
+                        template = liFriendshipTemplate;
+                        break;
+
+                    case "wallPost":
+                        template = liWallPostTemplate;
+                        break;
+
+                    case "profileUpdate":
+                        template = liProfileUpdateTemplate;
+                        break;
+
+                }
             },
 
 		});

@@ -12,7 +12,7 @@ define([
 			idAttribute: "eid", // TODO DON't KNOW if THIS WILL WORK
 
 			initialize: function (options) { 
-                this.friendEids = options.friendEids;
+                this.friendEids = options ? options.friendEids : [];
 			},
 
 			url: function () { 
