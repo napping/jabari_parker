@@ -111,14 +111,14 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
 
   var makeTimestampQuery = function (filter, attributeNames, attributeValues) {
     return function (ownerEids, timestamp, callback) {
+      var pendingCount = ownerEids.length;
       var result = [];
-      var doQuery;
-      doQuery = function (lastEvaluated) {
+      var doQuery = function (eid) {
         var params = {
           KeyConditions: {
             ownerEid: {
               ComparisonOperator: 'EQ',
-              AttributeValueList: []
+              AttributeValueList: [{ S: eid }]
             },
             timestamp: {
               ComparisonOperator: 'LT',
@@ -127,35 +127,31 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
           },
           TableName: 'entities',
           IndexName: 'ownerEid-timestamp-index',
-          Limit: 15,
           ScanIndexForward: false
         };
-        for (var i = 0; i < ownerEids.length; i++) {
-          params.KeyConditions.ownerEid.AttributeValueList.push({ S: ownerEids[i] });
-        }
         if (filter) {
           params.FilterExpression = filter;
           params.ExpressionAttributeNames = attributeNames;
           params.ExpressionAttributeValues = attributeValues;
         }
-        if (lastEvaluated) {
-          params.ExclusiveStartKey = lastEvaluated;
-        }
         dynamodb.query(params, function (err, data) {
           if (err) {
             console.log(err);
-            callback(null);
-          } else {
+            result = null;
+          } else if (result !== null) {
             result = result.concat(data.Items);
-            if (data.LastEvaluatedKey) {
-              doQuery(data.LastEvaluatedKey);
-            } else {
+          }
+          pendingCount -= 1;
+          if (pendingCount <= 0) {
+            if (result) {
               callback(result.map(pennbookUtil.flatten));
+            } else {
+              callback(null);
             }
           }
         });
       };
-      doQuery(null);
+      ownerEids.forEach(doQuery);
     };
   };
   exports.getWall = function (ownerEid, timestamp, callback) {
