@@ -30,6 +30,7 @@ define([
                 "user/:eid": "loadUser",
                 "back": "goBack",
                 "changePeekWall/:eid": "changePeekWall",
+                "logout": "logout",
 			},
 
 			initialize: function () {	// remove GET parameters on route?
@@ -67,6 +68,11 @@ define([
 
 				this.listenTo( vent, "showPeekPhotos", function(user) {	    // TODO
 					this.renderPeekPhotos(user); 
+				});	
+
+				this.listenTo( vent, "renderProfile", function(defaultSelect) {	    // TODO
+                    this.defaultSelect = defaultSelect;
+                    this.renderProfile(this.user);
 				});	
 
                 this.skeletonView = new SkeletonView({ loggedIn: true });
@@ -114,6 +120,9 @@ define([
 
                         router.boxUserView = new BoxUserView({ model: user });
                         router.renderFade( ".box-user", router.boxUserView );
+                        if (router.defaultSelect) { 
+                            $(".select-content-type").val(router.defaultSelect);
+                        }
                     },
                     error: function (userStatus, response, options) { 
                         console.log("Error getting user", user.get("firstName") + "'s status");
@@ -325,6 +334,14 @@ define([
 				window.history.go(-2);
 			},
 
+            logout: function () { 
+                console.log("Logging out");
+                this.navigate("/#");
+                $.post( "/api/logout" );
+                location.reload();
+
+                return false;
+            }
 		});
 
 		return Router;

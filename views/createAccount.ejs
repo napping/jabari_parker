@@ -38,8 +38,6 @@
             <input type="text" class="form-control" id="enter-last-name" value=""></input>
             <label for="enter-affiliation">Affiliation:</label>
             <input type="text" class="form-control" id="enter-affiliation" value=""></input>
-            <label for="enter-interests">Interests: (Enter as list separated by commas)</label>
-            <input type="text" class="form-control" id="enter-interests" value=""></input>
 
             <button type="submit" class="btn btn-small button-hover submit-account">Save</button>
         </div>
@@ -61,17 +59,16 @@
                     firstName: $("#enter-first-name").val(),
                     lastName: $("#enter-last-name").val(),
                     affiliation: $("#enter-affiliation").val(),
-                    interests: $("#enter-interests", this.el).val().split(", "),
                 };
                 if (
                     !credentials.email ||
                     !credentials.password ||
                     !credentials.firstName ||
                     !credentials.lastName ||
-                    !credentials.affiliation ||
-                    !credentials.interests 
+                    !credentials.affiliation
                 ) { 
                     alert("Please fill out all fields.");
+                    return false;
                 }
 
                 $.ajax({
@@ -81,13 +78,12 @@
                     'data': JSON.stringify(credentials),
                     'dataType': 'json',
                     'success': function (response) { 
-                        location.reload();
+                        window.location.href = "/";
                     }
                 });
             }
 
             $(".submit-account").on( "click", function () {
-console.log("clicked");
                 submitPost();
             });
         });

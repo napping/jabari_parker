@@ -67,9 +67,13 @@ define([
                         break;
 
                     case "friendship":
+                        var person1 = new User({ eid: post.ownerEid });
+                        var person2 = new User({ eid: post.posterEid });
                         break;
 
                     case "wallPost":
+                        var person1 = new User({ eid: post.ownerEid });
+                        var person2 = new User({ eid: post.posterEid });
                         break;
 
                     case "profileUpdate":
