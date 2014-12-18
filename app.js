@@ -40,7 +40,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
   });
 
   app.get('/createAccount', function (req, res) { 
-      res.render("createAccount");
+    res.render('createAccount');
   });
 
   app.get('/api/profile/:eid?', function (req, res) {
@@ -155,6 +155,25 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
+  app.post('/api/batchEntity', function (req, res) {
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else if (!req.body.eids) {
+      res.status(204);
+      res.end();
+    } else {
+      pennbookGet.batchGetEntity(req.body.eids, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
+
   app.post('/api/login', function (req, res) {
     if (!req.body.email || !req.body.password) {
       res.status(204);
@@ -178,6 +197,42 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
     res.end();
     req.session.destroy();
+  });
+
+  app.post('/api/createAccount', function (req, res) {
+    if (!req.body.email || !req.body.password || !req.body.firstName ||
+        !req.body.lastName) {
+      res.status(204);
+      res.end();
+    } else {
+      pennbookPost.createAccount(req.body.email, req.body.password,
+          req.body.firstName, req.body.lastName, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
+
+  app.post('/api/profile', function (req, res) {
+    if (!req.session.eid)  {
+      res.status(401);
+      res.end();
+    } else {
+      pennbookPost.saveProfile(req.session.eid, req.body.firstName,
+          req.body.lastName, req.body.affiliation, req.body.interests,
+          function (result) {
+        if (result) {
+          res.write(JSON.stringify(req.body));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
   });
 
   app.post('/api/status', function (req, res) {
@@ -220,7 +275,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
-  var changeFriend = function (operation) {
+  var changeFriend = function (operationCall) {
     return function (req, res) {
       if (!req.session.eid) {
         res.status(401);
@@ -229,8 +284,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
         res.status(204);
         res.end();
       } else {
-        pennbookPost.changeFriend(operation, req.session.eid, req.params.eid,
-            function (result) {
+        operationCall(req.session.eid, req.params.eid, function (result) {
           if (result) {
             res.write(JSON.stringify(result));
           } else {
@@ -241,7 +295,26 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       }
     };
   };
-  app.post('/api/friend/:eid', changeFriend('ADD'));
-  app.post('/api/unfriend/:eid', changeFriend('DELETE'));
+  app.post('/api/friend/:eid', changeFriend(pennbookPost.addFriend));
+  app.post('/api/unfriend/:eid', changeFriend(pennbookPost.removeFriend));
 
+  app.post('/api/comment', function (req, res) {
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else if (!req.body.parentEid || !req.body.commentText) {
+      res.status(204);
+      res.end();
+    } else {
+      pennbookPost.saveComment(req.session.eid, req.body.parentEid,
+          req.body.commentText, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
 });

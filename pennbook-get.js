@@ -2,7 +2,8 @@
 /* global define */
 'use strict';
 
-define(['exports', 'aws-sdk'], function (exports, AWS) {
+define(['exports', 'aws-sdk', 'pennbook-util'],
+    function (exports, AWS, pennbookUtil) {
   var dynamodb = new AWS.DynamoDB({ region: 'us-east-1' });
 
   exports.getProfile = function (eid, callback) {
@@ -19,13 +20,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
       } else if (!data.Item) {
         callback({});
       } else {
-        var result = {};
-        for (var attr in data.Item) {
-          for (var type in data.Item[attr]) {
-            result[attr] = data.Item[attr][type];
-          }
-        }
-        callback(result);
+        callback(pennbookUtil.flatten(data.Item));
       }
     });
   };
@@ -46,17 +41,7 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
         console.log(err);
         callback(null);
       } else {
-        var result = [];
-        for (var i = 0; i < data.Responses.users.length; i++) {
-          var row = {};
-          for (var attr in data.Responses.users[i]) {
-            for (var type in data.Responses.users[i][attr]) {
-              row[attr] = data.Responses.users[i][attr][type];
-            }
-          }
-          result.push(row);
-        }
-        callback(result);
+        callback(data.Responses.users.map(pennbookUtil.flatten));
       }
     });
   };
@@ -75,13 +60,28 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
       } else if (!data.Item) {
         callback({});
       } else {
-        var result = {};
-        for (var attr in data.Item) {
-          for (var type in data.Item[attr]) {
-            result[attr] = data.Item[attr][type];
-          }
+        callback(pennbookUtil.flatten(data.Item));
+      }
+    });
+  };
+
+  exports.batchGetEntity = function (eids, callback) {
+    var params = {
+      RequestItems: {
+        entities: {
+          Keys: []
         }
-        callback(result);
+      }
+    };
+    for (var i = 0; i < eids.length; i++) {
+      params.RequestItems.entities.Keys.push({ eid: { S: eids[i] } });
+    }
+    dynamodb.batchGetItem(params, function (err, data) {
+      if (err) {
+        console.log(err);
+        callback(null);
+      } else {
+        callback(data.Responses.entities.map(pennbookUtil.flatten));
       }
     });
   };
@@ -123,19 +123,11 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
             console.log(err);
             callback(null);
           } else {
-            for (var i = 0; i < data.Items.length; i++) {
-              var item = {};
-              for (var attr in data.Items[i]) {
-                for (var type in data.Items[i][attr]) {
-                  item[attr] = data.Items[i][attr][type];
-                }
-              }
-              result.push(item);
-            }
+            result = result.concat(data.Items);
             if (data.LastEvaluatedKey) {
               doQuery(data.LastEvaluatedKey);
             } else {
-              callback(result);
+              callback(result.map(pennbookUtil.flatten));
             }
           }
         });
