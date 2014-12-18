@@ -92,6 +92,22 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     getEntity(req, res);
   });
 
+  app.get('/api/network/:affiliation', function (req, res) {
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else {
+      pennbookGet.getNetwork(req.params.affiliation, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
+
   app.get('/api/wall/:ownerEid/:timestamp?', function (req, res) {
     if (!req.session.eid) {
       res.status(401);
@@ -220,12 +236,13 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
 
   app.post('/api/createAccount', function (req, res) {
     if (!req.body.email || !req.body.password || !req.body.firstName ||
-        !req.body.lastName) {
+        !req.body.lastName || !req.body.affiliation) {
       res.status(204);
       res.end();
     } else {
       pennbookPost.createAccount(req.body.email, req.body.password,
-          req.body.firstName, req.body.lastName, function (result) {
+          req.body.firstName, req.body.lastName, req.body.affiliation,
+          function (result) {
         if (result) {
           res.write(JSON.stringify(result));
         } else {

@@ -41,7 +41,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
   };
 
   exports.createAccount = function (email, password, firstName, lastName,
-      callback) {
+      affiliation, callback) {
     var sha256sum = crypto.createHash('sha256');
     sha256sum.update(password);
     var params = {
@@ -50,7 +50,8 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
         email: { S: email },
         password: { S: sha256sum.digest('hex') },
         firstName: { S: firstName },
-        lastName: { S: lastName }
+        lastName: { S: lastName },
+        affiliation: { S: affiliation }
       },
       TableName: 'users'
     };
