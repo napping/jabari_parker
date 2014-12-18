@@ -34,43 +34,47 @@ define([
 			},
 
 			initialize: function () {	// remove GET parameters on route?
-				this.listenTo( vent, "message", function(message) {	    // TODO
+				this.listenTo( vent, "message", function(message) {	    
 					this.renderMessage( message ); 
 				});	
 
-				this.listenTo( vent, "error", function(message) {	    // TODO
+				this.listenTo( vent, "error", function(message) {	    
 					this.handleError( message ); 
 				});	
 
-				this.listenTo( vent, "showFriend", function(friend) {	    // TODO
+				this.listenTo( vent, "showFriend", function(friend) {	    
 					this.renderFriendPeek( friend ); 
 				});	
 
-				this.listenTo( vent, "showFeed", function(user) {	    // TODO
+				this.listenTo( vent, "showFeed", function(user) {	    
 					this.renderFeed(user); 
 				});	
 
-				this.listenTo( vent, "showWall", function(user) {	    // TODO
+				this.listenTo( vent, "showWall", function(user) {	    
 					this.renderWall(user); 
 				});	
 
-				this.listenTo( vent, "showPhotos", function(user) {	    // TODO
+				this.listenTo( vent, "showPhotos", function(user) {	    
 					this.renderPhotos(user); 
 				});	
 
-				this.listenTo( vent, "showEdit", function(user) {	    // TODO
+				this.listenTo( vent, "showEdit", function(user) {	    
 					this.renderEdit(user); 
 				});	
 
-				this.listenTo( vent, "showPeekWall", function(user) {	    // TODO
+				this.listenTo( vent, "showPeekWall", function(user) {	    
 					this.renderPeekWall(user); 
 				});	
 
-				this.listenTo( vent, "showPeekPhotos", function(user) {	    // TODO
+				this.listenTo( vent, "showPeekPhotos", function(user) {	    
 					this.renderPeekPhotos(user); 
 				});	
 
-				this.listenTo( vent, "renderProfile", function(defaultSelect) {	    // TODO
+				this.listenTo( vent, "renderStatusUpdate", function() {	    
+                    this.renderFeed(this.user);
+				});	
+
+				this.listenTo( vent, "renderProfile", function(defaultSelect) {	    
                     this.defaultSelect = defaultSelect;
                     this.renderProfile(this.user);
 				});	
@@ -94,16 +98,7 @@ define([
                         router.renderPeek(router.user);     // TODO, test
                         router.renderFriends(router.user);
                         router.renderSpecial(router.user);
-
-
-
-
-                        router.renderWall(router.user);  // TODO TESTING!!!!!!!!!
-
-
-
-
-
+                        // router.renderFeed(router.user);
                     },
                     error: function (model, response, options) { 
                         vent.trigger( "error", "Failed fetching user " + router.user.get("email") + ": " + response );
@@ -169,7 +164,10 @@ define([
             renderFriends: function (user) { 
                 var friendEids = user.get("friendEids") ? user.get("friendEids") : [];
                 var router = this;
+                var affiliation = user.get("affiliation");
+
                 this.friendsCollection = new UserList({ friendEids: friendEids });
+                this.networkCollection = new UserList([]);
 
                 if (friendEids.length > 0) { 
                     this.friendsCollection.fetch({
@@ -182,22 +180,47 @@ define([
                         dataType: "json", 
 
                         success: function (collection, response, options) { 
-                            router.boxFriendsView = new BoxFriendsView({ collection: collection }); 
+                            router.boxFriendsView = new BoxFriendsView({ friendsCollection: router.friendsCollection, networkCollection: [] }); 
+                            console.log("getting network");
 
-                            router.renderFade( ".box-friends", router.boxFriendsView );
+                            $.get( "/api/network/" + affiliation, function (data) { 
+                                console.log("Got network data:", data);
+                                router.networkCollection = new UserList(data);
+
+                                router.boxFriendsView = new BoxFriendsView({ 
+                                    friendsCollection: router.friendsCollection, 
+                                    networkCollection: router.networkCollection 
+                                }); 
+
+                                router.renderFade( ".box-friends", router.boxFriendsView );
+
+                            }, "json" );
                         },
 
                         error: function (model, response, options) { 
                             vent.trigger( "error", "Could not fetch friend user " 
                                          + model.get("eid") + ": " + response );
 
-                            router.boxFriendsView = new BoxFriendsView({ collection: router.friendsCollection }); 
+                            router.boxFriendsView = new BoxFriendsView({ friendsCollection: [], networkCollection: [] }); 
                             router.renderFade( ".box-friends", router.boxFriendsView );
                         }
                     });
                 } else { 
-                    router.friendsCollection = new UserList([]);
-                    router.boxFriendsView = new BoxFriendsView({ collection: router.friendsCollection }); 
+                    router.boxFriendsView = new BoxFriendsView({ friendsCollection: [], networkCollection: [] }); 
+
+                    $.get( "/api/network/" + affiliation, function (data) { 
+                        console.log("Got network data:", data);
+                        router.networkCollection = new UserList(data);
+
+                        router.boxFriendsView = new BoxFriendsView({ 
+                            friendsCollection: router.friendsCollection, 
+                            networkCollection: router.networkCollection 
+                        }); 
+
+                        router.renderFade( ".box-friends", router.boxFriendsView );
+
+                    }, "json" );
+
 
                     router.renderFade( ".box-friends", router.boxFriendsView );
                 }

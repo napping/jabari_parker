@@ -63,6 +63,7 @@ define([
                     newStatus.save( { statusText: newText }, { 
                         success: function (model) { 
                             vent.trigger( "message", "Successfully updated status." );
+                            vent.trigger( "renderStatusUpdate" );
                             view.model.set({ status: model.get("statusText") });
                             view.render();
                         },

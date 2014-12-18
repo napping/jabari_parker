@@ -24,7 +24,6 @@ define([
                 if (options) { 
                     this.data = options.data;
                 }
-                console.log(this.data);
 			}, 
 
             events: { 
@@ -46,7 +45,6 @@ define([
 			},
 
             appendPost: function (post) { 
-                console.log("POST: ", post);
                 var view = this;
                 var templator; 
                 switch (post.type) { 
@@ -62,6 +60,7 @@ define([
 
                             error: function (model, response) { 
                                 console.log("Error get status feed");
+                                vent.trigger( "Error rendering some status feed items" );
                             }
                         });
                         break;
@@ -69,6 +68,26 @@ define([
                     case "friendship":
                         var person1 = new User({ eid: post.ownerEid });
                         var person2 = new User({ eid: post.posterEid });
+                        person1.fetch({
+                            success: function (model) {
+                                person2.fetch({
+                                    success: function (model) {
+                                        post["person1"] = person1.toJSON();
+                                        post["person2"] = person2.toJSON();
+
+                                        $(".news-feed > ul", view.el).append( templator( post ) );
+                                    },
+
+                                    error: function (model, response) { 
+                                        vent.trigger( "Error rendering some friendship feed items" );
+                                    }
+                                });
+                            },
+
+                            error: function (model, response) {
+                                vent.trigger( "Error rendering some friendship feed items" );
+                            }
+                        });
                         break;
 
                     case "wallPost":
@@ -77,7 +96,7 @@ define([
                         break;
 
                     case "profileUpdate":
-                        templator = _.template( liNewStatusTemplate );
+                        templator = _.template( liProfileUpdateTemplate );
 
                         var person1 = new User({ eid: post.ownerEid });
                         person1.fetch({ 
@@ -87,7 +106,7 @@ define([
                             },
 
                             error: function (model, response) { 
-                                console.log("Error get status feed");
+                                vent.trigger( "Error rendering some profile update feed items" );
                             }
                         });
  
