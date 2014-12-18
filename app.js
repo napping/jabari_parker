@@ -236,8 +236,8 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
-  app.put('/api/profile', function (req, res) {
-    if (!req.session.eid)  {
+  app.put('/api/profile/:eid', function (req, res) {
+    if (!req.session.eid || req.session.eid !== req.params.eid) {
       res.status(401);
       res.end();
     } else {
