@@ -40,7 +40,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
   });
 
   app.get('/createAccount', function (req, res) { 
-      res.render("createAccount");
+    res.render('createAccount');
   });
 
   app.get('/api/profile/:eid?', function (req, res) {
@@ -180,13 +180,13 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     req.session.destroy();
   });
 
-  app.post('/api/register', function (req, res) {
+  app.post('/api/createAccount', function (req, res) {
     if (!req.body.email || !req.body.password || !req.body.firstName ||
         !req.body.lastName) {
       res.status(204);
       res.end();
     } else {
-      pennbookPost.register(req.body.email, req.body.password,
+      pennbookPost.createAccount(req.body.email, req.body.password,
           req.body.firstName, req.body.lastName, function (result) {
         if (result) {
           res.write(JSON.stringify(result));

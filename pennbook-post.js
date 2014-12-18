@@ -40,7 +40,8 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     });
   };
 
-  exports.register = function (email, password, firstName, lastName, callback) {
+  exports.createAccount = function (email, password, firstName, lastName,
+      callback) {
     var sha256sum = crypto.createHash('sha256');
     sha256sum.update(password);
     var params = {
