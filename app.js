@@ -155,6 +155,25 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
+  app.post('/api/batchEntity', function (req, res) {
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else if (!req.body.eids) {
+      res.status(204);
+      res.end();
+    } else {
+      pennbookGet.batchGetEntity(req.body.eids, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
+
   app.post('/api/login', function (req, res) {
     if (!req.body.email || !req.body.password) {
       res.status(204);

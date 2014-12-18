@@ -86,6 +86,37 @@ define(['exports', 'aws-sdk'], function (exports, AWS) {
     });
   };
 
+  exports.batchGetEntity = function (eids, callback) {
+    var params = {
+      RequestItems: {
+        entities: {
+          Keys: []
+        }
+      }
+    };
+    for (var i = 0; i < eids.length; i++) {
+      params.RequestItems.entities.Keys.push({ eid: { S: eids[i] } });
+    }
+    dynamodb.batchGetItem(params, function (err, data) {
+      if (err) {
+        console.log(err);
+        callback(null);
+      } else {
+        var result = [];
+        for (var i = 0; i < data.Responses.entities.length; i++) {
+          var row = {};
+          for (var attr in data.Responses.entities[i]) {
+            for (var type in data.Responses.entities[i][attr]) {
+              row[attr] = data.responses.entities[i][attr][type];
+            }
+          }
+          result.push(row);
+        }
+        callback(result);
+      }
+    });
+  };
+
   var makeTimestampQuery = function (filter, attributeNames, attributeValues) {
     return function (ownerEids, timestamp, callback) {
       var result = [];
