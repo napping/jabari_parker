@@ -256,7 +256,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
-  var changeFriend = function (operation) {
+  var changeFriend = function (operationCall) {
     return function (req, res) {
       if (!req.session.eid) {
         res.status(401);
@@ -265,8 +265,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
         res.status(204);
         res.end();
       } else {
-        pennbookPost.changeFriend(operation, req.session.eid, req.params.eid,
-            function (result) {
+        operationCall(req.session.eid, req.params.eid, function (result) {
           if (result) {
             res.write(JSON.stringify(result));
           } else {
@@ -277,7 +276,6 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       }
     };
   };
-  app.post('/api/friend/:eid', changeFriend('ADD'));
-  app.post('/api/unfriend/:eid', changeFriend('DELETE'));
-
+  app.post('/api/friend/:eid', changeFriend(pennbookPost.addFriend));
+  app.post('/api/unfriend/:eid', changeFriend(pennbookPost.removeFriend));
 });

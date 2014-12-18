@@ -186,7 +186,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     });
   };
 
-  exports.changeFriend = function (operation, eid1, eid2, callback) {
+  var changeFriend = function (operation, eid1, eid2, callback) {
     var params1 = {
       Key: {
         eid: { S: eid1 }
@@ -220,5 +220,34 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         });
       }
     });
+  };
+  exports.addFriend = function (eid1, eid2, callback) {
+    changeFriend('ADD', eid1, eid2, function (result) {
+      if (result) {
+        var params = {
+          Item: {
+            eid: { S: uuid.v4() },
+            ownerEid: { S: eid2 },
+            timestamp: { N: Math.floor(new Date() / 1000).toString() },
+            type: 'friendship',
+            posterEid: { S: eid1 }
+          },
+          TableName: 'entities'
+        };
+        dynamodb.putItem(params, function (err, callback) {
+          if (err) {
+            console.log(err);
+            callback(null);
+          } else {
+            callback({});
+          }
+        });
+      } else {
+        callback(null);
+      }
+    });
+  };
+  exports.removeFriend = function (eid1, eid2, callback) {
+    changeFriend('DELETE', eid1, eid2, callback);
   };
 });
