@@ -56,7 +56,6 @@ define([
                         var person1 = new User({ eid: post.ownerEid });
                         person1.fetch({ 
                             success: function (model) { 
-                                console.log(model.toJSON());
                                 post["person1"] = model.toJSON();
                                 $(".news-feed > ul", view.el).append( templator( post ) );
                             },
@@ -68,15 +67,27 @@ define([
                         break;
 
                     case "friendship":
-                        template = liFriendshipTemplate;
                         break;
 
                     case "wallPost":
-                        template = liWallPostTemplate;
                         break;
 
                     case "profileUpdate":
-                        template = liProfileUpdateTemplate;
+                        templator = _.template( liNewStatusTemplate );
+
+                        var person1 = new User({ eid: post.ownerEid });
+                        person1.fetch({ 
+                            success: function (model) { 
+                                post["person1"] = model.toJSON();
+                                $(".news-feed > ul", view.el).append( templator( post ) );
+                            },
+
+                            error: function (model, response) { 
+                                console.log("Error get status feed");
+                            }
+                        });
+ 
+
                         break;
 
                 }

@@ -29,7 +29,7 @@ define([
 				"": "loadIndex",
                 "user/:eid": "loadUser",
                 "back": "goBack",
-                "changePeekWall/:d": "",
+                "changePeekWall/:eid": "changePeekWall",
 			},
 
 			initialize: function () {	// remove GET parameters on route?
@@ -288,6 +288,23 @@ define([
                         console.log("Error getting user", friend.get("firstName") + "'s status");
 
                         router.renderFade( ".box-peek", router.boxPeekView );
+                    }
+                });
+            },
+
+            changePeekWall: function (eid) { 
+                this.navigate("/");
+
+                var person = new User({ eid: eid });
+                var router = this;
+                person.fetch({ 
+                    success: function (model) { 
+                        router.renderFriendPeek(model);
+                        router.renderPeekWall(model);
+                    },
+
+                    error: function (model, reponse) { 
+                        vent.trigger( "error", "Error peeking user:" + response );
                     }
                 });
             },
