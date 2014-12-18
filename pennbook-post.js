@@ -64,6 +64,56 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
     });
   };
 
+  exports.saveProfile = function (eid, firstName, lastName, affiliation,
+      interests, callback) {
+    var updateParams = {
+      Key: {
+        eid: { S: eid }
+      },
+      TableName: 'users',
+      UpdateExpression: 'SET #fn = :firstName SET #ln = :lastName ' + 
+        'SET #a = :affiliation SET #i = :interests',
+      ExpressionAttributeNames: {
+        '#fn': 'firstName',
+        '#ln': 'lastName',
+        '#a': 'affiliation',
+        '#i': 'interests'
+      },
+      ExpressionAttributeValues: {
+        ':firstName': { S: firstName },
+        ':lastName': { S: lastName },
+        ':affiliation': { S: affiliation },
+        ':interests': { SS: interests }
+      },
+      ReturnValues: 'ALL_UPDATED'
+    };
+    dynamodb.updateItem(updateParams, function (err, data) {
+      if (err) {
+        console.log(err);
+        callback(null);
+      } else {
+        var putParams = {
+          Item: {
+            eid: { S: uuid.v4() },
+            ownerEid: { S: eid },
+            timestamp: { N: Math.floor(new Date() / 1000).toString() },
+            type: { S: 'profileUpdate' },
+            updates: { M: data.Attributes }
+          },
+          TableName: 'entities'
+        };
+        dynamodb.putItem(putParams, function (err, data) {
+          if (err) {
+            console.log(err);
+            callback(null);
+          } else {
+            callback({});
+          }
+        });
+      }
+    });
+  };
+
   exports.saveStatus = function (ownerEid, statusText, callback) {
     var putParams = {
       Item: {

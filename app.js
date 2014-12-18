@@ -198,6 +198,24 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
+  app.post('/api/profile', function (req, res) {
+    if (!req.session.eid)  {
+      res.status(401);
+      res.end();
+    } else {
+      pennbookPost.saveProfile(req.session.eid, req.body.firstName,
+          req.body.lastName, req.body.affiliation, req.body.interests,
+          function (result) {
+        if (result) {
+          res.write(JSON.stringify(req.body));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
+
   app.post('/api/status', function (req, res) {
     if (!req.session.eid) {
       res.status(401);
