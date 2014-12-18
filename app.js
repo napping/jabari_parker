@@ -92,6 +92,22 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     getEntity(req, res);
   });
 
+  app.get('/api/network/:affiliation', function (req, res) {
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else {
+      pennbookGet.getNetwork(req.params.affiliation, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
+
   app.get('/api/wall/:ownerEid/:timestamp?', function (req, res) {
     if (!req.session.eid) {
       res.status(401);

@@ -86,6 +86,29 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
     });
   };
 
+  exports.getNetwork = function (affiliation, callback) {
+    var params = {
+      KeyConditions: {
+        affiliation: {
+          ComparisonOperator: 'EQ',
+          AttributeValueList: [{ S: affiliation }]
+        }
+      },
+      TableName: 'users',
+      IndexName: 'affiliation-index'
+    };
+    dynamodb.query(params, function (err, data) {
+      if (err) {
+        console.log(err);
+        callback(null);
+      } else if (!data.Items) {
+        callback({});
+      } else {
+        callback(data.Items.map(pennbookUtil.flatten));
+      }
+    });
+  };
+
   var makeTimestampQuery = function (filter, attributeNames, attributeValues) {
     return function (ownerEids, timestamp, callback) {
       var result = [];
