@@ -284,8 +284,22 @@ ul {
     min-height: 30em;
 }
 
-
 .box-friends .friends-list { 
+    width: 50%;
+    float: left;
+}
+
+.box-friends .friends-list:hover { 
+    background: #E8E8E8;
+}
+
+.box-friends .network-list { 
+    float: left;
+    width: 50%;
+}
+
+.box-friends .network-list:hover { 
+    background: #E8E8E8;
 }
 
 .box-friends h3 { 
