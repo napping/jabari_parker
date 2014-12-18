@@ -220,12 +220,13 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
 
   app.post('/api/createAccount', function (req, res) {
     if (!req.body.email || !req.body.password || !req.body.firstName ||
-        !req.body.lastName) {
+        !req.body.lastName || !req.body.affiliation) {
       res.status(204);
       res.end();
     } else {
       pennbookPost.createAccount(req.body.email, req.body.password,
-          req.body.firstName, req.body.lastName, function (result) {
+          req.body.firstName, req.body.lastName, req.body.affiliation,
+          function (result) {
         if (result) {
           res.write(JSON.stringify(result));
         } else {
