@@ -218,7 +218,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
             eid: { S: uuid.v4() },
             ownerEid: { S: eid2 },
             timestamp: { N: Math.floor(new Date() / 1000).toString() },
-            type: 'friendship',
+            type: { S: 'friendship' },
             posterEid: { S: eid1 }
           },
           TableName: 'entities'
@@ -238,5 +238,44 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
   };
   exports.removeFriend = function (eid1, eid2, callback) {
     changeFriend('DELETE', eid1, eid2, callback);
+  };
+
+  exports.saveComment = function (ownerEid, parentEid, commentText, callback) {
+    var putParams = {
+      Item: {
+        eid: { S: uuid.v4() },
+        ownerEid: { S: ownerEid },
+        timestamp: { N: Math.floor(new Date() / 1000).toString() },
+        type: { S: 'comment' },
+        parentEid: { S: parentEid },
+        commentText: { S: commentText }
+      },
+      TableName: 'entities'
+    };
+    dynamodb.putItem(putParams, function (err, data) {
+      if (err) {
+        console.log(err);
+        callback(null);
+      } else {
+        var addedItem = data.Item;
+        var updateParams = {
+          Key: {
+            eid: { S: parentEid }
+          },
+          TableName: 'entities',
+          UpdateExpression: 'ADD #ch :childEid',
+          ExpressionAttributeNames: { '#ch': 'childEids' },
+          ExpressionAttributeValues: { ':childEid': putParams.Item.eid }
+        };
+        dynamodb.updateItem(updateParams, function (err, data) {
+          if (err) {
+            console.log(err);
+            callback(null);
+          } else {
+            callback(pennbookUtil.flatten(addedItem));
+          }
+        });
+      }
+    });
   };
 });

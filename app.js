@@ -297,4 +297,24 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
   };
   app.post('/api/friend/:eid', changeFriend(pennbookPost.addFriend));
   app.post('/api/unfriend/:eid', changeFriend(pennbookPost.removeFriend));
+
+  app.post('/api/comment', function (req, res) {
+    if (!req.session.eid) {
+      res.status(401);
+      res.end();
+    } else if (!req.body.parentEid || !req.body.commentText) {
+      res.status(204);
+      res.end();
+    } else {
+      pennbookPost.saveComment(req.session.eid, req.body.parentEid,
+          req.body.commentText, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
+  });
 });
