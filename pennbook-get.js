@@ -153,4 +153,37 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
       makeTimestampQuery()(newsfeedEids, timestamp, callback);
     });
   };
+
+  exports.userSearch = function (query, callback) {
+    var result = [];
+    var doQuery;
+    doQuery = function (lastEvaluated) {
+      var params = {
+        TableName: 'users',
+        FilterExpression: '#fn BEGINS_WITH :query OR #ln BEGINS_WITH :query',
+        ExpressionAttributeNames: {
+          '#fn': 'firstName',
+          '#ln': 'lastName'
+        },
+        ExpressionAttributeValues: { ':query': { S: query } }
+      };
+      if (lastEvaluated) {
+        params.ExclusiveStartKey = lastEvaluated;
+      }
+      dynamodb.scan(params, function (err, data) {
+        if (err) {
+          console.log(err);
+          callback(null);
+        } else {
+          result = result.concat(data.Items);
+          if (data.LastEvaluatedKey) {
+            doQuery(data.LastEvaluatedKey);
+          } else {
+            callback(result.map(pennbookUtil.flatten));
+          }
+        }
+      });
+    };
+    doQuery(null);
+  };
 });
