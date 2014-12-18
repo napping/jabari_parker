@@ -2,8 +2,8 @@
 /* global define */
 'use strict';
 
-define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
-    function (exports, AWS, crypto, uuid) {
+define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
+    function (exports, AWS, crypto, uuid, pennbookUtil) {
   var dynamodb = new AWS.DynamoDB({ region: 'us-east-1' });
 
   exports.login = function (email, password, callback) {
@@ -131,6 +131,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         callback(null);
       } else {
         // update the current status and child entity set in the users table
+        var addedItem = data.Item;
         var updateParams = {
           Key: {
             eid: { S: ownerEid }
@@ -145,13 +146,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
             console.log(err);
             callback(null);
           } else {
-            var result = {};
-            for (var attr in putParams.Item) {
-              for (var type in putParams.Item[attr]) {
-                result[attr] = putParams.Item[attr][type];
-              }
-            }
-            callback(result);
+            callback(pennbookUtil.flatten(addedItem));
           }
         });
       }
@@ -175,13 +170,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid'],
         console.log(err);
         callback(null);
       } else {
-        var result = {};
-        for (var attr in putParams.Item) {
-          for (var type in putParams.Item[attr]) {
-            result[attr] = putParams.Item[attr][type];
-          }
-        }
-        callback(result);
+        callback(pennbookUtil.flatten(data.Item));
       }
     });
   };
