@@ -175,21 +175,22 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     if (!req.session.eid) {
       res.status(401);
       res.end();
-    }
-    var eid;
-    if (req.params.eid) {
-      eid = req.params.eid;
     } else {
-      eid = req.session.eid;
-    }
-    pennbookGet.visualizer(eid, function (result) {
-      if (result) {
-        res.write(JSON.stringify(result));
+      var eid;
+      if (req.params.eid) {
+        eid = req.params.eid;
       } else {
-        res.status(500);
+        eid = req.session.eid;
       }
-      res.end();
-    });
+      pennbookGet.visualizer(eid, function (result) {
+        if (result) {
+          res.write(JSON.stringify(result));
+        } else {
+          res.status(500);
+        }
+        res.end();
+      });
+    }
   });
 
   app.post('/api/batchProfile', function (req, res) {
