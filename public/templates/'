@@ -203,21 +203,7 @@ a {
     display: table-cell;
     margin-bottom: -2000px;
     padding-bottom: 2000px;
-    overflow-y: scroll;
-}
-
-.contained { 
-    padding: .5em;
-    max-height: 40em;
-    overflow-y: scroll;
-    background: #F4F4F4;
-    border-radius: 2px;
-    margin-right: .5em;
-    margin-left: .5em;
-}
-
-.contained h3 { 
-    margin-top: .5em;
+    overflow-y: auto;
 }
 
 .box-row .col-md-4:hover { 
@@ -599,29 +585,4 @@ ul {
 .news-feed ul li{ 
     margin-left: 2em;
     margin-right: 1em;
-    margin-top: 1.5em;
-}
-
-.comments {
-    padding: .5em .25em .25em .25em;
-    margin: 1em 2.5em;
-    margin-right: .5em;
-    background: #f8f8f8;
-}
-
-.comments:hover {
-    background: white;
-}
-
-.enter-comment { 
-    width: 70%;
-    font-size: 90%;
-    margin: 3% 15%;
-    height: 2em;
-}
-
-.comments-ul li { 
-    margin-left: 1em !important;
-    margin-top: .5em !important;
-    margin-bottom: 1.5em;
 }

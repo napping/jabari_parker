@@ -1,11 +1,6 @@
 <li>
-    <a href="#changePeekWall/<%= person1.eid %>"><%= person1.firstName %> <%= person1.lastName %> wrote: <%= postText %>
-    <% if (comments) { %>
-        <% for (var i = 0; i < comments.length; i++) { %>
-            <div class="wall-post-comment">
-                <p>This is one comment!</p>
-            </div>
-        <% } %>
-    <% } else { %>
-    <% } %>
+    <a href="#changePeekWall/<%= posterEid %>"><%= firstName %> <%= lastName %></a> wrote on this wall: "<%= postText %>".
+
+    <div class="comments" id="comments-<%= eid %>">
+    </div>
 </li>

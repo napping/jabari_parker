@@ -16,15 +16,10 @@ define([
 
 			initialize: function (options) { 
                 this.areFriends = false;
-                if (options && options.areFriends) { 
-                    this.areFriends = true;
+                if (options) { 
+                    this.areFriends = options.areFriends;
                 }
-                console.log(this.areFriends);
-
-                if (!this.model.get("areFriends")) { 
-                    this.model.set({ areFriends: this.areFriends });
-                }
-                console.log(this.areFriends);
+                this.model.set({ areFriends: this.areFriends });
 			}, 
 
             events: { 
@@ -44,25 +39,16 @@ define([
 
             addFriend: function () { 
                 if (this.areFriends == false) { 
-
                     var view = this;
                     $.post( "/api/friend/" + this.model.get("eid"), function (data) { 
-                        console.log( data );
-
-                        view.areFriends = true;
-                        view.render();
+                        vent.trigger( "friendsChange", view.model );
                     });
-                } else { 
-                    console.log("removing friend");
 
+                } else { 
                     var view = this;
                     $.post( "/api/unfriend/" + this.model.get("eid"), function (data) { 
-                        console.log( data );
-
-                        view.areFriends = false;
-                        view.render();
+                        vent.trigger( "friendsChange", view.model );
                     });
- 
                 }
             },
 

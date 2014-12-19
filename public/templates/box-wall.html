@@ -1,15 +1,18 @@
 <div class="box box-wall">
-    <h3 class="box-header">Wall Posts</h3>
+    <div class="contained">
+        <h3 class="box-header">Wall Posts</h3>
 
-    <% if (typeof(canPost) != "undefined" && canPost == true) { %>
-        <div class="write-post">
-            <input type="text" class="form-control input-wallpost" placeholder="Write on this wall!" maxlength="160"></input>
-            <button type="submit" class="btn btn-small button-hover submit-wallpost">Post</button>
+        <% if (typeof(canPost) != "undefined" && canPost == true) { %>
+            <div class="write-post">
+                <input type="text" class="form-control input-wallpost" placeholder="Write on this wall!" maxlength="160"></input>
+                <button type="submit" class="btn btn-small button-hover submit-wallpost">Post</button>
+            </div>
+        <% } %>
+        <div class="wall-posts">
+            <ul>
+            </ul>
         </div>
-    <% } %>
-    <div class="wall-posts">
-        <ul>
-        </ul>
     </div>
 </div>
+
  

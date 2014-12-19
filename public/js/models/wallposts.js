@@ -8,8 +8,6 @@ define([
 		var WallPost = Backbone.Model.extend({ 
 			defaults: { 
 				postText: "",
-                comments: [],
-                owner: "An unknown person",
 			},
 
 			idAttribute: "eid",
@@ -24,7 +22,7 @@ define([
 			},
 
             urlRoot: function () {  // for posting, the GETS are handled in batches
-                return "/api/wallPost/" + this.ownerEid;
+                return "/api/wallPost";
             },
 				
 		});

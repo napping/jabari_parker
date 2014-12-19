@@ -4,11 +4,12 @@ define([
 		"backbone",
 		"events",
         "models/wallposts",
+        "models/users",
 		"text!../../templates/box-wall.html",
 		"text!../../templates/post.html",
 
 	], function (	$, _, Backbone, vent,
-                    WallPost,
+                    WallPost, User,
                     boxWallTemplate, postTemplate
 				) { 
 
@@ -17,12 +18,16 @@ define([
 
 			initialize: function (options) { 
                 this.canPost = false;
+                this.isOwner = false;
                 if (options) { 
                     if (options.canPost) { 
                         this.canPost = true;
                     }
                     if (options.ownerEid) { 
                         this.ownerEid = options.ownerEid;
+                    }
+                    if (options.isOwner) { 
+                        this.isOwner = options.isOwner;
                     }
                 }
 			}, 
@@ -39,7 +44,7 @@ define([
                     view.addPost(post);
                 });
 
-                if (this.collection.length == 0) { 
+                if (this.collection.length == 0) {  // TODO
                     $(".wall-posts > ul", this.el).append("<li><h5>No posts yet.</h5></li>");
                 }
 
@@ -49,12 +54,36 @@ define([
             addPost: function (post) { 
                 var postHTML = _.template( postTemplate );
 
-                $(".wall-posts > ul", this.el).append( postHTML( post.toJSON() ) );
+                var poster = new User({ eid: post.get("posterEid") });
+                var view = this;
+                poster.fetch({ 
+                    success: function () { 
+                        post.set({ 
+                            firstName: poster.get("firstName"), 
+                            lastName: poster.get("lastName"), 
+                        });
+                        if (view.isOwner) { 
+                            $(".wall-posts > ul", ".box-user2").append( postHTML( post.toJSON() ) );
+                        } else { 
+                            $(".wall-posts > ul", ".box-peek2").append( postHTML( post.toJSON() ) );
+                        }
+                    }
+                });
             },
 
             submitWallpost: function () { 
                 var text = $(".input-wallpost").val();
                 var wallpost = new WallPost({ ownerEid: this.ownerEid, postText: text }); 
+
+                var view = this;
+                wallpost.save({ ownerEid: this.ownerEid, postText: text }, {
+                    success: function () {
+                        vent.trigger( "newWallPost", view.ownerEid );
+                    },
+
+                    error: function () {
+                    }
+                });
             }
 		});
 
