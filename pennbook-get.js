@@ -205,4 +205,60 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
     };
     doQuery(null);
   };
+
+  var bfsLayer;
+  bfsLayer = function (eids, depth, callback) {
+    exports.batchGetProfile(eids, function (result) {
+      if (result) {
+        if (depth > 0) {
+          var nextLayer = [];
+          for (var i = 0; i < result.length; i++) {
+            nextLayer = nextLayer.concat(result[i].childEids);
+          }
+          bfsLayer(nextLayer, depth - 1, function (result2) {
+            var bfsResult = result.map(function (profile) {
+              return {
+                id: profile.eid,
+                name: profile.firstName + ' ' + profile.lastName,
+                data: {},
+                children: profile.childEids.map(function (childEid) {
+                  return result2[childEid];
+                })
+              };
+            });
+            var finalResult = {};
+            for (var i = 0; i < bfsResult.length; i++) {
+              finalResult[bfsResult[i].id] = bfsResult[i];
+            }
+            callback(finalResult);
+          });
+        } else {
+          var bfsResult = result.map(function (profile) {
+            return {
+              id: profile.eid,
+              name: profile.firstName + ' ' + profile.lastName,
+              data: {},
+              children: []
+            };
+          });
+          var finalResult = {};
+          for (var j = 0; j < bfsResult.length; j++) {
+            finalResult[bfsResult[j].id] = bfsResult[j];
+          }
+          callback(finalResult);
+        }
+      } else {
+        callback(null);
+      }
+    });
+  };
+  exports.visualizer = function (eid, callback) {
+    bfsLayer([eid], function (result) {
+      if (result) {
+        callback(result[eid]);
+      } else {
+        callback(null);
+      }
+    });
+  };
 });
