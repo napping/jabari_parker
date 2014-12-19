@@ -208,23 +208,36 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
 
   var bfsLayer;
   bfsLayer = function (eids, depth, callback) {
+    if (eids.length === 0) {
+      callback({});
+      return;
+    }
     exports.batchGetProfile(eids, function (result) {
       if (result) {
         if (depth > 0) {
           var nextLayer = [];
           for (var i = 0; i < result.length; i++) {
-            nextLayer = nextLayer.concat(result[i].childEids);
+            if (result[i].friendEids) {
+              nextLayer = nextLayer.concat(result[i].friendEids);
+            }
           }
           bfsLayer(nextLayer, depth - 1, function (result2) {
+            if (!result2) {
+              callback(null);
+              return;
+            }
             var bfsResult = result.map(function (profile) {
-              return {
+              var result = {
                 id: profile.eid,
                 name: profile.firstName + ' ' + profile.lastName,
-                data: {},
-                children: profile.childEids.map(function (childEid) {
-                  return result2[childEid];
-                })
+                data: {}
               };
+              if (profile.friendEids) {
+                result.children = profile.friendEids.map(function (friendEid) {
+                  return result2[friendEid];
+                });
+              }
+              return result;
             });
             var finalResult = {};
             for (var i = 0; i < bfsResult.length; i++) {
@@ -253,7 +266,7 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
     });
   };
   exports.visualizer = function (eid, callback) {
-    bfsLayer([eid], function (result) {
+    bfsLayer([eid], 2, function (result) {
       if (result) {
         callback(result[eid]);
       } else {
