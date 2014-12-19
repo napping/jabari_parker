@@ -179,7 +179,7 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
     doQuery = function (lastEvaluated) {
       var params = {
         TableName: 'users',
-        FilterExpression: '#fn BEGINS WITH :query OR #ln BEGINS WITH :query',
+        FilterExpression: 'begins_with (#fn, :query) OR begins_with (#ln :query)',
         ExpressionAttributeNames: {
           '#fn': 'firstName',
           '#ln': 'lastName'
