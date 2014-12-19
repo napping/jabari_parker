@@ -239,13 +239,16 @@ define([
                             $.get( "/api/network/" + affiliation, function (data) { 
                                 router.networkCollection = new UserList(data);
 
-                                router.boxFriendsView = new BoxFriendsView({ 
-                                    friendsCollection: router.friendsCollection, 
-                                    networkCollection: router.networkCollection,
-                                    selfEid: router.user.get("eid")
-                                }); 
+                                $.get( "/api/online", function (onliners) { 
+                                    router.boxFriendsView = new BoxFriendsView({ 
+                                        friendsCollection: router.friendsCollection, 
+                                        networkCollection: router.networkCollection,
+                                        onliners: onliners,
+                                        selfEid: router.user.get("eid")
+                                    }); 
 
-                                router.renderFade( ".box-friends", router.boxFriendsView );
+                                    router.renderFade( ".box-friends", router.boxFriendsView );
+                                });
 
                             }, "json" );
                         },
@@ -279,7 +282,7 @@ define([
             },
 
             renderSpecial: function (user) { 
-                this.boxSpecialsView = new BoxSpecialsView();
+                this.boxSpecialsView = new BoxSpecialsView({ affiliation: this.user.get("affiliation") });
 
                 this.renderFade( ".box-specials", this.boxSpecialsView );
             },

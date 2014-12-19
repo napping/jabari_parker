@@ -10,8 +10,8 @@
         </button>
     </div>
 
-    <% if (false) { %>
-        <img class="peek-img" src="static/images/<%= url %>"/>
+    <% if (profilePicture && profilePicture.length != 0) { %>
+        <img class="peek-img" src="<%= profilePicture %>"/>
     <% } else { %>
         <img class="peek-img" src="static/images/filler.jpg"/>
     <% } %>

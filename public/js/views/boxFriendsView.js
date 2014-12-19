@@ -23,6 +23,7 @@ define([
                     this.friendsCollection = options.friendsCollection;
                     this.networkCollection = options.networkCollection;
                     this.selfEid = options.selfEid;
+                    this.onliners = options.onliners;
                 }
 			}, 
 
@@ -39,6 +40,9 @@ define([
                 if (this.friendsCollection && this.friendsCollection.length > 0) { 
                     var view = this;
                     this.friendsCollection.each( function (friend) { 
+                        if (view.onliners.indexOf(friend.get("eid")) >= 0) { 
+                            friend.set({ online: true });
+                        }
                         if (friend.get("eid") && friend.get("eid") != view.selfEid) {
                             friend.set({ areFriends: true });
                             view.friendDirectory[ friend.get("email") ] = friend;
@@ -81,7 +85,7 @@ define([
 			},
 
             addFriendLink: function (friend) { 
-                if (friend.online) { 
+                if (friend.get("online")) { 
                     var linkTemplate = _.template( "<li><a class=\"friend-link online\" id=\"friend_" + friend.get("email") + "\"><%= firstName %> <%= lastName %><a></li>" );
                 } else { 
                     var linkTemplate = _.template( "<li><a class=\"friend-link\" id=\"friend_" + friend.get("email") + "\"><%= firstName %> <%= lastName %><a></li>" );

@@ -51,7 +51,7 @@ define([
                 console.log("showing visualizer");
                 $(".specials-body", this.el).html( _.template( visualizerTemplate )() );
 
-                this.simulate({});
+                this.simulate();
 
             },
 
@@ -74,28 +74,25 @@ define([
                 });
             },
 
-            simulate: function (json) { 
-
+            simulate: function () { 
                 $(document).ready(function() {
                     $.getJSON('/api/visualizer', function (json) {
-                        console.log(json)
                         var infovis = document.getElementById('infovis');
                         var w = infovis.offsetWidth - 50, h = infovis.offsetHeight - 50;
-
-                        //init Hypertree
-                        var ht = new $jit.Hypertree({
-                            //id of the visualization container
-                            injectInto: 'infovis',
-                            //canvas width and height
-                            width: w,
-                            height: h,
-                            //Change node and edge styles such as
-                            //color, width and dimensions.
-                            Node: {
-                                //overridable: true,
-                                'transform': false,
-                                color: "#f00"
-                            },
+                    //init Hypertree
+                    var ht = new $jit.Hypertree({
+                        //id of the visualization container
+                        injectInto: 'infovis',
+                        //canvas width and height
+                        width: w,
+                        height: h,
+                        //Change node and edge styles such as
+                        //color, width and dimensions.
+                        Node: {
+                            //overridable: true,
+                            'transform': false,
+                            color: "#f00"
+                        },
 
                             Edge: {
                                 //overridable: true,
@@ -151,15 +148,13 @@ define([
                     });
                 });
  
-
-
-
-
-
-
             },
 
             showRecommend: function () { 
+                console.log("showing visualizer");
+                $(".specials-body", this.el).html( _.template( "<h2>Unimplemented \:\( </h2>" )() );
+
+
             },
 		});
 

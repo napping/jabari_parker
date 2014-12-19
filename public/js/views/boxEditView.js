@@ -33,12 +33,14 @@ define([
                 var newLastName = $("#change-last-name", this.el).val();
                 var newAffiliation = $("#change-affiliation", this.el).val();
                 var newInterests = $("#change-interests", this.el).val().split(", ");
+                var newPicture = $("#change-picture", this.el).val();
 
                 this.model.set({ 
                     firstName: newFirstName,
                     lastName: newLastName,
                     affiliation: newAffiliation,
                     interests: newInterests,
+                    profilePicture: newPicture,
                 });
 
                 var view = this;

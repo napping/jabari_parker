@@ -1,6 +1,6 @@
 <div class="box box-portrait">
-    <% if (false) { %>
-        <img src="static/images/<%= url %>"/>
+    <% if (profilePicture && profilePicture.length != 0) { %>
+        <img src="<%= profilePicture %>"/>
     <% } else { %>
         <img src="static/images/filler.jpg"/>
     <% } %>
