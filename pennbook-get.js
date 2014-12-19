@@ -217,7 +217,7 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
         if (depth > 0) {
           var nextLayer = [];
           var pred = function (elem) {
-            return !visited.contains(elem);
+            return visited.indexOf(elem) < 0;
           };
           for (var i = 0; i < result.length; i++) {
             if (result[i].friendEids) {
