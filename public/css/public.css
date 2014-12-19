@@ -19,7 +19,7 @@ a {
 }
 
 .logo { 
-    width: 50%;
+    width: 30%;
     margin-top: 3%;
     margin-left: auto;
     margin-right: auto;
@@ -214,6 +214,7 @@ a {
     border-radius: 2px;
     margin-right: .5em;
     margin-left: .5em;
+    margin-top: -1em;
 }
 
 .contained h3 { 
@@ -646,8 +647,11 @@ ul {
     width: 40%;
 }
 
+.visualizer-holder h4 { 
+    margin-left: 3em;
+}
 .specials-header { 
-    height: 5em;
+    height: 2.5em;
 }
 
 .specials-search { 
@@ -665,4 +669,13 @@ ul {
     width: 80%;
     padding: 1em;
     margin: 2em auto;
+}
+
+#infovis { 
+    text-align: center;
+}
+
+.online { 
+    color: red !important;
+    font-weight: bold;
 }

@@ -34,6 +34,7 @@ define([
 			},
 
 			initialize: function () {	// remove GET parameters on route?
+                this.feed = false;
                 $("a").on( "click", function (e) { 
                     e.preventDefault();
                 });
@@ -286,8 +287,12 @@ define([
             renderFeed: function (user) { 
                 console.log("rendering feed");
                 var router = this;
-                router.boxUser2View = new BoxFeedView({ data: [] }); 
 
+                router.refreshFeed = setTimeout( function () {
+                    router.renderFeed(router.user);
+                }, 20000);
+
+                router.boxUser2View = new BoxFeedView({ data: [] }); 
                 $.get( "/api/newsfeed", function (data) { 
                     if (!data) { 
                         vent.trigger( "error", 
@@ -303,6 +308,7 @@ define([
 
             renderWall: function (user) { 
                 var router = this;
+                clearTimeout(router.refreshFeed);
                 var wallPostCollection = new WallPostList({ eid: user.get("eid") });
                 router.boxUser2View = new BoxWallView({ collection: wallPostCollection, ownerEid: user.get("eid"), canPost: false, isOwner: true }); 
 
@@ -327,6 +333,7 @@ define([
             renderEdit: function (user) { 
                 console.log("rendering edit");
                 var router = this;
+                clearTimeout(router.refreshFeed);
                 router.boxUser2View = new BoxEditView({ model: router.user });
                 router.renderFade( ".box-user2", router.boxUser2View );
             },

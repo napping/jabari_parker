@@ -81,7 +81,11 @@ define([
 			},
 
             addFriendLink: function (friend) { 
-                var linkTemplate = _.template( "<li><a class=\"friend-link\" id=\"friend_" + friend.get("email") + "\"><%= firstName %> <%= lastName %><a></li>" );
+                if (friend.online) { 
+                    var linkTemplate = _.template( "<li><a class=\"friend-link online\" id=\"friend_" + friend.get("email") + "\"><%= firstName %> <%= lastName %><a></li>" );
+                } else { 
+                    var linkTemplate = _.template( "<li><a class=\"friend-link\" id=\"friend_" + friend.get("email") + "\"><%= firstName %> <%= lastName %><a></li>" );
+                }
                 $(".friends-list > ul", this.el).append( linkTemplate( friend.toJSON() ) );
             },
 

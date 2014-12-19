@@ -16,6 +16,7 @@ define([
                 status: "",
                 statusEid: undefined,
                 friendEids: [],
+                online: false,
 			},
 
 			idAttribute: "eid",
