@@ -5,11 +5,12 @@ define([
 		"events",
         "models/wallposts",
         "models/users",
+        "views/commentsView",
 		"text!../../templates/box-wall.html",
 		"text!../../templates/post.html",
 
 	], function (	$, _, Backbone, vent,
-                    WallPost, User,
+                    WallPost, User, CommentsView,
                     boxWallTemplate, postTemplate
 				) { 
 
@@ -62,12 +63,40 @@ define([
                             firstName: poster.get("firstName"), 
                             lastName: poster.get("lastName"), 
                         });
+
                         if (view.isOwner) { 
                             $(".wall-posts > ul", ".box-user2").append( postHTML( post.toJSON() ) );
                         } else { 
                             $(".wall-posts > ul", ".box-peek2").append( postHTML( post.toJSON() ) );
                         }
-                    }
+
+                        comments = JSON.stringify({ eids: post.get("childEids") });
+                        if (comments && comments.length > 0) {
+                            $.ajax({ 
+                                type: "POST",
+                                url: "/api/batchEntity",
+                                data: comments,
+                                contentType: "application/json",
+                                dataType: "json",
+                                success: function (data) { 
+                                    if (!data) { 
+                                        data = [];
+                                    }
+                                    var place = view.isOwner ? "userWall" : "peekWall";
+                                    var commentsView = new CommentsView({
+                                        data: data,
+                                        parentEid: post.get("eid"),
+                                        place: place,
+                                    });
+
+                                    $("#comments-" + post.get("eid"), view.el).html( commentsView.render().el );
+                                },
+                            });
+
+                        } else { 
+                            $("#comments-" + post_get("eid"), view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                        }
+                    },
                 });
             },
 

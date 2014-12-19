@@ -79,8 +79,26 @@ define([
                     this.renderFeed(this.user);
 				});	
 
-				this.listenTo( vent, "newComment", function() {	    
-                    this.renderFeed(this.user);
+				this.listenTo( vent, "newComment", function(place) {	    
+                    console.log("newComment", place);
+                    switch (place) { 
+                        case "feed":
+                            this.renderFeed(this.user);
+                            break;
+
+                        case "userWall":
+                            this.renderWall(this.user);
+                            break;
+
+                        case "peekWall":
+                            this.renderPeekWall(this.peekFriend);
+                            break;
+
+                        default:
+                            this.renderFeed(this.user);
+                            break;
+
+                    }
 				});	
 
 				this.listenTo( vent, "newWallPost", function(ownerEid) {	    
@@ -314,6 +332,7 @@ define([
             },
 
             renderPeekWall: function (user) { 
+                this.peekFriend = user;
                 console.log(user);
                 var router = this;
                 var wallPostCollection = new WallPostList({ eid: user.get("eid") });
@@ -339,6 +358,7 @@ define([
             },
 
             renderFriendPeek: function (friend) { 
+                this.peekFriend = friend;
                 var router = this;
                 var userStatus = new UserStatus({ statusEid: friend.get("statusEid") });
                 var areFriends = router.user.get( "friendEids" ).indexOf( friend.get("eid") ) >= 0;
@@ -365,6 +385,7 @@ define([
 
                 var person = new User({ eid: eid });
                 var router = this;
+                this.peekFriend = person;
                 person.fetch({ 
                     success: function (model) { 
                         router.renderFriendPeek(model);

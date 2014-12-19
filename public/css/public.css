@@ -537,7 +537,7 @@ ul {
 .write-post {
     padding: 2% 4%;
     padding-right: 0;
-    width: 92%;
+    width: 98%;
     height: 4.5em;
 }
 
@@ -545,7 +545,7 @@ ul {
     float: left;
     padding-left: 5%;
     padding-right: 15%;
-    width: 80%;
+    width: 75%;
 }
 
 .write-post button {
@@ -624,4 +624,45 @@ ul {
     margin-left: 1em !important;
     margin-top: .5em !important;
     margin-bottom: 1.5em;
+}
+
+.float-right { 
+    float: right;
+}
+
+.float-left { 
+    float: left;
+}
+
+.specials-header { 
+    width: 100%;
+}
+
+.specials-header h3 { 
+    margin-top: 0em;
+}
+
+.specials-header select { 
+    width: 40%;
+}
+
+.specials-header { 
+    height: 5em;
+}
+
+.specials-search { 
+    margin: 0em 2em;
+    padding: 1em;
+    min-height: 15em;
+    background: #E8E8E8;
+}
+
+.specials-search:hover { 
+    background: #F4F4F4;
+}
+
+.user-search { 
+    width: 80%;
+    padding: 1em;
+    margin: 2em auto;
 }

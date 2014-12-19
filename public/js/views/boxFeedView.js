@@ -49,8 +49,7 @@ define([
                 var view = this;
                 var templator; 
                 var comments;
-                                comments = JSON.stringify({eids: post.childEids});
-                                console.log(comments);
+
                 switch (post.type) { 
                     case "status":
                         templator = _.template( liNewStatusTemplate );
@@ -76,13 +75,14 @@ define([
                                             var commentsView = new CommentsView({
                                                 data: data,
                                                 parentEid: post.eid,
+                                                place: "feed"
                                             });
 
                                             $("#comments-" + post.eid, view.el).html( commentsView.render().el );
                                         },
                                     });
                                 } else { 
-                                    $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                    $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid, place: "feed" }).render().el );
                                 }
                             },
 
@@ -122,13 +122,14 @@ define([
                                                     var commentsView = new CommentsView({
                                                         data: data,
                                                         parentEid: post.eid,
+                                                        place: "feed"
                                                     });
 
                                                     $("#comments-" + post.eid, view.el).html( commentsView.render().el );
                                                 },
                                             });
                                         } else { 
-                                            $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                            $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid, place: "feed" }).render().el );
                                         }
 
 
@@ -175,13 +176,14 @@ define([
                                                     var commentsView = new CommentsView({
                                                         data: data,
                                                         parentEid: post.eid,
+                                                        place: "feed"
                                                     });
 
                                                     $("#comments-" + post.eid, view.el).html( commentsView.render().el );
                                                 },
                                             });
                                         } else { 
-                                            $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                            $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid, place: "feed" }).render().el );
                                         }
 
 
@@ -224,13 +226,14 @@ define([
                                             var commentsView = new CommentsView({
                                                 data: data,
                                                 parentEid: post.eid,
+                                                place: "feed"
                                             });
 
                                             $("#comments-" + post.eid, view.el).html( commentsView.render().el );
                                         },
                                     });
                                 } else { 
-                                    $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                    $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid, place: "feed" }).render().el );
                                 }
                             },
 

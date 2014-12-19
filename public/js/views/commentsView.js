@@ -15,11 +15,11 @@ define([
 			template: _.template( commentsTemplate ),
 
 			initialize: function (options) { 
-                console.log(options);
                 this.data = [];
                 if (options) { 
                     this.data = options.data;
                     this.parentEid = options.parentEid;
+                    this.place = options.place;
                 }
 			}, 
 
@@ -30,7 +30,7 @@ define([
                 $(this.el).html( this.template({ parentEid: this.parentEid, data: [] }) );
 
                 var view = this;
-                for (var i = 0; i < this.data.length; i++) { 
+                for (var i = this.data.length - 1; i >= 0; i--) { 
                     view.appendComment(this.data[i]);
                 }
 
@@ -48,7 +48,7 @@ define([
 
             appendComment: function (comment) { 
                 var view = this;
-                var templator = _.template( "<li><p><%= person1.firstName %> <%= person1.lastName %> commented: \"<%= commentText %>\".</p></li>" );
+                var templator = _.template( "<li><p><a href=\"#changePeekWall/<%= person1.eid %>\"><%= person1.firstName %> <%= person1.lastName %></a> commented: \"<%= commentText %>\".</p></li>" );
 
                 var person1 = new User({ eid: comment.ownerEid });
                 person1.fetch({ 
@@ -66,6 +66,7 @@ define([
 
             postComment: function (data) { 
                 console.log("Posting comment:", data);
+                var view = this;
                 $.ajax({ 
                     type: "POST",
                     url: "/api/comment",
@@ -74,7 +75,7 @@ define([
                     dataType: 'json',
                     success: function (response) { 
                         console.log("Successfully posted comment");
-                        vent.trigger( "newComment", "Successfully posted comment" );
+                        vent.trigger( "newComment", view.place );
                         vent.trigger( "message", "Successfully posted comment" );
                     }
                 });
