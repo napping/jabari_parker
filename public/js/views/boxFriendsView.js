@@ -40,7 +40,7 @@ define([
                 if (this.friendsCollection && this.friendsCollection.length > 0) { 
                     var view = this;
                     this.friendsCollection.each( function (friend) { 
-                        if (view.onliners.indexOf(friend.get("eid")) >= 0) { 
+                        if (view.onliners && view.onliners.indexOf(friend.get("eid")) >= 0) { 
                             friend.set({ online: true });
                         }
                         if (friend.get("eid") && friend.get("eid") != view.selfEid) {
