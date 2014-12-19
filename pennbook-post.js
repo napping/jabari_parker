@@ -266,7 +266,7 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
           TableName: 'entities',
           UpdateExpression: 'ADD #ch :childEid',
           ExpressionAttributeNames: { '#ch': 'childEids' },
-          ExpressionAttributeValues: { ':childEid': putParams.Item.eid }
+          ExpressionAttributeValues: { ':childEid': { SS: [putParams.Item.eid.S] } }
         };
         dynamodb.updateItem(updateParams, function (err, data) {
           if (err) {
