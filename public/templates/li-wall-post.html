@@ -2,13 +2,8 @@
     <p>
         <a href="#changePeekWall/<%= person1.eid %>"><%= person1.firstName %> <%= person1.lastName %></a> wrote: "<%= postText %>" on <a href="#changePeekWall/<%= person2.eid %>"><%= person2.firstName %> <%= person2.lastName %>'s wall</a>.
     </p>
-    <% if (typeof(comments) != "undefined") { %>
-        <% for (var i = 0; i < comments.length; i++) { %>
-            <div class="wall-post-comment">
-                <p>This is one comment!</p>
-            </div>
-        <% } %>
-    <% } else { %>
-    <% } %>
+
+    <div class="comments">
+    </div>
 </li>
 

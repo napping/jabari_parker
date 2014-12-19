@@ -4,6 +4,7 @@ define([
 		"backbone",
 		"events",
         "models/users",
+        "views/commentsView",
 		"text!../../templates/box-feed.html",
 		"text!../../templates/li-new-status.html",
 		"text!../../templates/li-friendship.html",
@@ -11,7 +12,7 @@ define([
 		"text!../../templates/li-wall-post.html",
 
 	], function (	$, _, Backbone, vent,
-                    User,
+                    User, CommentsView,
                     boxFeedTemplate, 
                     liNewStatusTemplate, liFriendshipTemplate, liProfileUpdateTemplate, liWallPostTemplate
 				) { 
@@ -47,6 +48,9 @@ define([
             appendPost: function (post) { 
                 var view = this;
                 var templator; 
+                var comments;
+                                comments = JSON.stringify({eids: post.childEids});
+                                console.log(comments);
                 switch (post.type) { 
                     case "status":
                         templator = _.template( liNewStatusTemplate );
@@ -56,6 +60,30 @@ define([
                             success: function (model) { 
                                 post["person1"] = model.toJSON();
                                 $(".news-feed > ul", view.el).append( templator( post ) );
+
+                                comments = JSON.stringify({eids: post.childEids});
+                                if (comments && comments.length > 0) {
+                                    $.ajax({ 
+                                        type: "POST",
+                                        url: "/api/batchEntity",
+                                        data: comments,
+                                        contentType: "application/json",
+                                        dataType: "json",
+                                        success: function (data) { 
+                                            if (!data) { 
+                                                data = [];
+                                            }
+                                            var commentsView = new CommentsView({
+                                                data: data,
+                                                parentEid: post.eid,
+                                            });
+
+                                            $("#comments-" + post.eid, view.el).html( commentsView.render().el );
+                                        },
+                                    });
+                                } else { 
+                                    $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                }
                             },
 
                             error: function (model, response) { 
@@ -66,6 +94,8 @@ define([
                         break;
 
                     case "friendship":
+                        templator = _.template( liFriendshipTemplate );
+
                         var person1 = new User({ eid: post.ownerEid });
                         var person2 = new User({ eid: post.posterEid });
                         person1.fetch({
@@ -76,6 +106,32 @@ define([
                                         post["person2"] = person2.toJSON();
 
                                         $(".news-feed > ul", view.el).append( templator( post ) );
+                                        comments = JSON.stringify({eids: post.childEids});
+
+                                        if (comments && comments.length > 0) {
+                                            $.ajax({ 
+                                                type: "POST",
+                                                url: "/api/batchEntity",
+                                                data: comments,
+                                                contentType: "application/json",
+                                                dataType: "json",
+                                                success: function (data) { 
+                                                    if (!data) { 
+                                                        data = [];
+                                                    }
+                                                    var commentsView = new CommentsView({
+                                                        data: data,
+                                                        parentEid: post.eid,
+                                                    });
+
+                                                    $("#comments-" + post.eid, view.el).html( commentsView.render().el );
+                                                },
+                                            });
+                                        } else { 
+                                            $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                        }
+
+
                                     },
 
                                     error: function (model, response) { 
@@ -91,8 +147,57 @@ define([
                         break;
 
                     case "wallPost":
+                        templator = _.template( liWallPostTemplate );
+
                         var person1 = new User({ eid: post.ownerEid });
                         var person2 = new User({ eid: post.posterEid });
+                        person1.fetch({
+                            success: function (model) {
+                                person2.fetch({
+                                    success: function (model) {
+                                        post["person1"] = person1.toJSON();
+                                        post["person2"] = person2.toJSON();
+
+                                        $(".news-feed > ul", view.el).append( templator( post ) );
+
+                                        comments = JSON.stringify({eids: post.childEids});
+                                        if (comments && comments.length > 0) {
+                                            $.ajax({ 
+                                                type: "POST",
+                                                url: "/api/batchEntity",
+                                                data: comments,
+                                                contentType: "application/json",
+                                                dataType: "json",
+                                                success: function (data) { 
+                                                    if (!data) { 
+                                                        data = [];
+                                                    }
+                                                    var commentsView = new CommentsView({
+                                                        data: data,
+                                                        parentEid: post.eid,
+                                                    });
+
+                                                    $("#comments-" + post.eid, view.el).html( commentsView.render().el );
+                                                },
+                                            });
+                                        } else { 
+                                            $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                        }
+
+
+                                    },
+
+                                    error: function (model, response) { 
+                                        vent.trigger( "Error rendering some friendship feed items" );
+                                    }
+                                });
+                            },
+
+                            error: function (model, response) {
+                                vent.trigger( "Error rendering some friendship feed items" );
+                            }
+                        });
+ 
                         break;
 
                     case "profileUpdate":
@@ -103,6 +208,30 @@ define([
                             success: function (model) { 
                                 post["person1"] = model.toJSON();
                                 $(".news-feed > ul", view.el).append( templator( post ) );
+
+                                comments = JSON.stringify({ eids: post.childEids });
+                                if (comments && comments.length > 0) {
+                                    $.ajax({ 
+                                        type: "POST",
+                                        url: "/api/batchEntity",
+                                        data: comments,
+                                        contentType: "application/json",
+                                        dataType: "json",
+                                        success: function (data) { 
+                                            if (!data) { 
+                                                data = [];
+                                            }
+                                            var commentsView = new CommentsView({
+                                                data: data,
+                                                parentEid: post.eid,
+                                            });
+
+                                            $("#comments-" + post.eid, view.el).html( commentsView.render().el );
+                                        },
+                                    });
+                                } else { 
+                                    $("#comments-" + post.eid, view.el).html( new CommentsView({ data: [], parentEid: post.eid }).render().el );
+                                }
                             },
 
                             error: function (model, response) { 

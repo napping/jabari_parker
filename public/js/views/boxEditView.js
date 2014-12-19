@@ -44,14 +44,12 @@ define([
                 var view = this;
                 this.model.save( {}, { 
                     success: function (model, response, options) { 
-                        console.log("successful");
                         vent.trigger( "message", "Updated your profile." );
                         vent.trigger( "renderProfile", "edit" );
                         view.render();
                     },
 
                     error: function (model, response, options) { 
-                        console.log("successful");
                         vent.trigger( "error", "There was an error in updating your profile." );
                         view.render();
                     }

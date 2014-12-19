@@ -34,6 +34,10 @@ define([
 			},
 
 			initialize: function () {	// remove GET parameters on route?
+                $("a").on( "click", function (e) { 
+                    e.preventDefault();
+                });
+
 				this.listenTo( vent, "message", function(message) {	    
 					this.renderMessage( message ); 
 				});	
@@ -43,7 +47,8 @@ define([
 				});	
 
 				this.listenTo( vent, "showFriend", function(friend) {	    
-					this.renderFriendPeek( friend ); 
+                    this.renderFriendPeek(friend);
+					this.renderPeekWall( friend ); 
 				});	
 
 				this.listenTo( vent, "showFeed", function(user) {	    
@@ -74,9 +79,39 @@ define([
                     this.renderFeed(this.user);
 				});	
 
+				this.listenTo( vent, "newComment", function() {	    
+                    this.renderFeed(this.user);
+				});	
+
+				this.listenTo( vent, "newWallPost", function(ownerEid) {	    
+                    if (ownerEid == this.user.get("eid")) { 
+                        this.renderWall(this.user);
+                    } else { 
+                        var owner = new User({ eid: ownerEid });
+                        this.renderPeekWall(owner);
+                    }
+				});	
+
+				this.listenTo( vent, "friendsChange", function(user) {	    
+                    var router = this;
+                    user.fetch({ 
+                        success: function (model) { 
+                            router.user = new User();
+                            router.user.fetch({
+                                success: function () { 
+                                    router.renderFriends(router.user);
+                                    router.renderFriendPeek(user);
+                                },
+                            });
+                        }
+                    });
+
+				});	
+
 				this.listenTo( vent, "renderProfile", function(defaultSelect) {	    
                     this.defaultSelect = defaultSelect;
                     this.renderProfile(this.user);
+                    this.renderFriends(this.user);
 				});	
 
                 this.skeletonView = new SkeletonView({ loggedIn: true });
@@ -180,16 +215,15 @@ define([
                         dataType: "json", 
 
                         success: function (collection, response, options) { 
-                            router.boxFriendsView = new BoxFriendsView({ friendsCollection: router.friendsCollection, networkCollection: [] }); 
-                            console.log("getting network");
+                            router.boxFriendsView = new BoxFriendsView({ friendsCollection: router.friendsCollection, networkCollection: [] , selfEid: router.user.get("eid") }); 
 
                             $.get( "/api/network/" + affiliation, function (data) { 
-                                console.log("Got network data:", data);
                                 router.networkCollection = new UserList(data);
 
                                 router.boxFriendsView = new BoxFriendsView({ 
                                     friendsCollection: router.friendsCollection, 
-                                    networkCollection: router.networkCollection 
+                                    networkCollection: router.networkCollection,
+                                    selfEid: router.user.get("eid")
                                 }); 
 
                                 router.renderFade( ".box-friends", router.boxFriendsView );
@@ -201,28 +235,26 @@ define([
                             vent.trigger( "error", "Could not fetch friend user " 
                                          + model.get("eid") + ": " + response );
 
-                            router.boxFriendsView = new BoxFriendsView({ friendsCollection: [], networkCollection: [] }); 
+                            router.boxFriendsView = new BoxFriendsView({ friendsCollection: [], networkCollection: [], selfEid: router.user.get("eid") }); 
+
                             router.renderFade( ".box-friends", router.boxFriendsView );
                         }
                     });
                 } else { 
-                    router.boxFriendsView = new BoxFriendsView({ friendsCollection: [], networkCollection: [] }); 
-
                     $.get( "/api/network/" + affiliation, function (data) { 
-                        console.log("Got network data:", data);
                         router.networkCollection = new UserList(data);
 
                         router.boxFriendsView = new BoxFriendsView({ 
                             friendsCollection: router.friendsCollection, 
-                            networkCollection: router.networkCollection 
+                            networkCollection: router.networkCollection,
+                            selfEid: router.user.get("eid")
+
                         }); 
 
                         router.renderFade( ".box-friends", router.boxFriendsView );
 
                     }, "json" );
 
-
-                    router.renderFade( ".box-friends", router.boxFriendsView );
                 }
 
             },
@@ -254,7 +286,7 @@ define([
             renderWall: function (user) { 
                 var router = this;
                 var wallPostCollection = new WallPostList({ eid: user.get("eid") });
-                router.boxUser2View = new BoxWallView({ collection: wallPostCollection, ownerEid: user.get("eid"), canPost: false }); 
+                router.boxUser2View = new BoxWallView({ collection: wallPostCollection, ownerEid: user.get("eid"), canPost: false, isOwner: true }); 
 
                 wallPostCollection.fetch({
                     success: function (collection, response, options) { 
@@ -282,19 +314,21 @@ define([
             },
 
             renderPeekWall: function (user) { 
+                console.log(user);
                 var router = this;
                 var wallPostCollection = new WallPostList({ eid: user.get("eid") });
-                router.boxUser2View = new BoxWallView({ collection: wallPostCollection, canPost: true }); 
+
+                router.boxPeek2View = new BoxWallView({ collection: wallPostCollection, ownerEid: user.get("eid"), canPost: true, isOwner: false }); 
 
                 wallPostCollection.fetch({
                     success: function (collection, response, options) { 
-                        router.renderFade( ".box-peek2", router.boxUser2View );
+                        router.renderFade( ".box-peek2", router.boxPeek2View );
                     },
 
                     error: function (model, response, options) { 
-                        vent.trigger( "error", "Could not fetch wall posts for user" + router.user.get("email") + " response: " + response );
+                        vent.trigger( "error", "Could not fetch wall posts for user" + user.get("email") + " response: " + response );
 
-                        router.renderFade( ".box-peek2", router.boxUser2View );
+                        router.renderFade( ".box-peek2", router.boxPeek2View );
                     }
                 });
 
@@ -307,7 +341,9 @@ define([
             renderFriendPeek: function (friend) { 
                 var router = this;
                 var userStatus = new UserStatus({ statusEid: friend.get("statusEid") });
-                router.boxPeekView = new BoxPeekView({ model: friend, areFriends: true });
+                var areFriends = router.user.get( "friendEids" ).indexOf( friend.get("eid") ) >= 0;
+
+                router.boxPeekView = new BoxPeekView({ model: friend, areFriends: areFriends });
 
                 userStatus.fetch({
                     success: function (userStatus, response, options) {

@@ -28,10 +28,6 @@ define([
 
                 $(this.el).html( this.template( this.model.toJSON() ) );
 
-                $(".select-content-type").change( function () { 
-                    console.log("changed");
-                });
-
                 return this;
 			},
 
