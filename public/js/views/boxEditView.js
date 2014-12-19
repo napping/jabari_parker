@@ -35,13 +35,24 @@ define([
                 var newInterests = $("#change-interests", this.el).val().split(", ");
                 var newPicture = $("#change-picture", this.el).val();
 
-                this.model.set({ 
-                    firstName: newFirstName,
-                    lastName: newLastName,
-                    affiliation: newAffiliation,
-                    interests: newInterests,
-                    profilePicture: newPicture,
-                });
+                if (newPicture.length > 0) { 
+                    this.model.set({ 
+                        firstName: newFirstName,
+                        lastName: newLastName,
+                        affiliation: newAffiliation,
+                        interests: newInterests,
+                        profilePicture: newPicture,
+                    });
+                } else { 
+                    this.model.set({ 
+                        firstName: newFirstName,
+                        lastName: newLastName,
+                        affiliation: newAffiliation,
+                        interests: newInterests,
+                        profilePicture: "static/images/filler.jpg",
+                    });
+ 
+                }
 
                 var view = this;
                 this.model.save( {}, { 
