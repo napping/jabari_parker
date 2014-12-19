@@ -224,6 +224,10 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
               nextLayer = nextLayer.concat(result[i].friendEids.filter(pred));
             }
           }
+          if (nextLayer.length === 0) {
+            callback([]);
+            return;
+          }
           bfsLayer(nextLayer, visited.concat(nextLayer), depth - 1, function (result2) {
             if (!result2) {
               callback(null);
