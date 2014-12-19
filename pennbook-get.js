@@ -207,7 +207,7 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
   };
 
   var bfsLayer;
-  bfsLayer = function (eids, depth, callback) {
+  bfsLayer = function (eids, visited, depth, callback) {
     if (eids.length === 0) {
       callback({});
       return;
@@ -216,12 +216,15 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
       if (result) {
         if (depth > 0) {
           var nextLayer = [];
+          var pred = function (elem) {
+            return !visited.contains(elem);
+          };
           for (var i = 0; i < result.length; i++) {
             if (result[i].friendEids) {
-              nextLayer = nextLayer.concat(result[i].friendEids);
+              nextLayer = nextLayer.concat(result[i].friendEids.filter(pred));
             }
           }
-          bfsLayer(nextLayer, depth - 1, function (result2) {
+          bfsLayer(nextLayer, visited.concat(nextLayer), depth - 1, function (result2) {
             if (!result2) {
               callback(null);
               return;
@@ -266,7 +269,7 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
     });
   };
   exports.visualizer = function (eid, callback) {
-    bfsLayer([eid], 2, function (result) {
+    bfsLayer([eid], [eid], 2, function (result) {
       if (result) {
         callback(result[eid]);
       } else {
