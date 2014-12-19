@@ -30,6 +30,8 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
 
   app.use('/static', express.static('public'));
 
+  var onlineEids = [];
+
   app.get('/', function (req, res) {
     if (req.session.eid) {
       res.render('index');
@@ -193,6 +195,11 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     }
   });
 
+  app.get('/api/online', function (req, res) {
+    res.write(JSON.stringify(onlineEids));
+    res.end();
+  });
+
   app.post('/api/batchProfile', function (req, res) {
     if (!req.session.eid) {
       res.status(401);
@@ -239,6 +246,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       pennbookPost.login(req.body.email, req.body.password, function (result) {
         if (result) {
           req.session.eid = result.eid;
+          onlineEids.push(result.eid);
           res.write(JSON.stringify(result));
         } else {
           res.status(500);
@@ -253,6 +261,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
       res.status(500);
     }
     res.end();
+    onlineEids = onlineEids.splice(onlineEids.indexOf(req.session.eid), 1);
     req.session.destroy();
   });
 
