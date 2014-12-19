@@ -224,6 +224,10 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
               nextLayer = nextLayer.concat(result[i].friendEids.filter(pred));
             }
           }
+          if (nextLayer.length === 0) {
+            callback([]);
+            return;
+          }
           bfsLayer(nextLayer, visited.concat(nextLayer), depth - 1, function (result2) {
             if (!result2) {
               callback(null);
@@ -233,12 +237,13 @@ define(['exports', 'aws-sdk', 'pennbook-util'],
               var result = {
                 id: profile.eid,
                 name: profile.firstName + ' ' + profile.lastName,
-                data: {}
+                data: {},
+                children: []
               };
-              if (profile.friendEids) {
-                result.children = profile.friendEids.map(function (friendEid) {
-                  return result2[friendEid];
-                });
+              for (var j = 0; j < profile.friendEids.length; j++) {
+                if (result2[profile.friendEids[j]]) {
+                  result.children.push(result2[profile.friendEids[j]]);
+                }
               }
               return result;
             });
