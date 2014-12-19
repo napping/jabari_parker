@@ -66,25 +66,27 @@ define(['exports', 'aws-sdk', 'crypto', 'node-uuid', 'pennbook-util'],
   };
 
   exports.saveProfile = function (eid, firstName, lastName, affiliation,
-      interests, callback) {
+      interests, profilePicture, callback) {
     var updateParams = {
       Key: {
         eid: { S: eid }
       },
       TableName: 'users',
       UpdateExpression: 'SET #fn = :firstName, #ln = :lastName, ' +
-          '#a = :affiliation, #i = :interests',
+          '#a = :affiliation, #i = :interests, #pp = :profilePicture',
       ExpressionAttributeNames: {
         '#fn': 'firstName',
         '#ln': 'lastName',
         '#a': 'affiliation',
-        '#i': 'interests'
+        '#i': 'interests',
+        '#pp': 'profilePicture'
       },
       ExpressionAttributeValues: {
         ':firstName': { S: firstName },
         ':lastName': { S: lastName },
         ':affiliation': { S: affiliation },
-        ':interests': { SS: interests }
+        ':interests': { SS: interests },
+        ':profilePicture': { S: profilePicture }
       },
       ReturnValues: 'UPDATED_NEW'
     };

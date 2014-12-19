@@ -291,7 +291,7 @@ requirejs(['express', 'express-session', 'ejs', 'body-parser', 'pennbook-get',
     } else {
       pennbookPost.saveProfile(req.session.eid, req.body.firstName,
           req.body.lastName, req.body.affiliation, req.body.interests,
-          function (result) {
+          req.body.profilePicture, function (result) {
         if (result) {
           res.write(JSON.stringify(req.body));
         } else {
